@@ -10,4 +10,4 @@ This project is in active development and is NOT ready for production use.
 Technologies Used
 =================
 
-- [Python](python.org) - Open source programming language.
+- [Quasar](https://quasar.dev/) - Open source programming language.
