@@ -13,16 +13,24 @@ Technologies Used
 - [Quasar](https://quasar.dev/) - Open source programming language.
 - [Vue.js](vuejs.org) - An approachable, performant and versatile framework for building web user interfaces.
 
-### Requirements
-- Node 12+ for Quasar CLI with Webpack, Node 14+ for Quasar CLI with Vite.
-- Yarn v1 (strongly recommended) or NPM.
+#### Installing Vue Plugin
 
-#### Installing Quasar
+Unninstall Vue past versions
 
-  $ yarn global add @quasar/cli
-  $ yarn create quasar
+    $ npm uninstall -g vue-cli
+    
+Install Vue
+
+    $ npm install -g @vue/cli
+    
+    
+#### Installing Quasar CLI
+
+    $ yarn global add @quasar/cli
+    $ yarn create quasar
 
 or:
 
-  $ npm i -g @quasar/cli
-  $ npm init quasar
+    $ npm i -g @quasar/cli
+    $ npm init quasar
+
