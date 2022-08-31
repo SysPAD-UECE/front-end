@@ -7,30 +7,40 @@ Status
 
 This project is in active development and is NOT ready for production use.
 
-Technologies Used
+Requirements
 =================
+
+To run this front-end project, you'll need Quasar and Vue.js installed.
+
+### Technologies used:
+==================
 
 - [Quasar](https://quasar.dev/) - Open source programming language.
 - [Vue.js](vuejs.org) - An approachable, performant and versatile framework for building web user interfaces.
 
-#### Installing Vue Plugin
+#Installing Vue.js CLI
 
-Unninstall Vue past versions
+If you want to check if already have Vue.js on your machine, use this command:
 
-    $ npm uninstall -g vue-cli
+    vue --version
     
-Install Vue
+If you have Vue 2.x.x CLI 2.x.x. installed, you’ll need to uninstall it with:
 
-    $ npm install -g @vue/cli
+    npm uninstall -g vue-cli
     
+Now you only need to end the instalation
+
+Now, to install Quasar CLI you'll need Node.js 14+. Verify your Node version with
+
+    node --version
     
-#### Installing Quasar CLI
+After verifying node on your pc,
 
-    $ yarn global add @quasar/cli
-    $ yarn create quasar
-
-or:
-
-    $ npm i -g @quasar/cli
-    $ npm init quasar
-
+    npm i -g @quasar/cli
+    
+#Install
+    
+    git clone https://github.com/FRIDA-LACNIC-UECE/front-end.git
+    yarn install
+    quasar dev
+    
