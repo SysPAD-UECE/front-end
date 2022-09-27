@@ -1,4 +1,5 @@
 <template>
+  
   <div class="q-pa-md" v-show='!this.$q.loading.isActive'>
     <q-card>
       <q-card-section class="q-pa-md q-gutter-sm">
@@ -110,6 +111,7 @@ import { Notify, Dialog, Loading } from 'quasar'
 import { api } from 'src/boot/axios'
 import { defineComponent, ref } from 'vue'
 import { mapGetters } from 'vuex'
+
 
 export default defineComponent({
   name: 'Users',

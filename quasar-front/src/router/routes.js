@@ -1,24 +1,11 @@
-
 const routes = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Index.vue') }
-    ]
-  },
-  {
-    path: '/login',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/Login.vue') }
-    ]
-  },
-  {
-    path: '/register',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/Register.vue') }
+      { path: '', component: () => import('pages/Login.vue') },
+      { path: 'login', component: () => import('pages/Login.vue') },
+      { path: '/register', component: () => import('pages/Register.vue')}
     ]
   },
   {
@@ -26,57 +13,42 @@ const routes = [
     component: () => import('layouts/ClientLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Databases.vue') },
-      {
-        path: 'databases',
-        children: [
-          { path: '', component: () => import('pages/Databases.vue') }
-        ]
-      }
+      { path: 'token', component: () => import('pages/Token.vue')},
+      // path: 'anonymization', component: () => import ('pages/anonymization.vue')},
+      { path: 'anonymizationconfig', component: () => import('pages/anonymizationConfig.vue')}
     ]
-  },
-  {
-    path: '/token',
-    component: () => import('layouts/ClientLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/Token.vue') }
-    ]
+    // , meta: {
+    //  requiresAuth: true
+    // }
   },
   {
     path: '/admin',
     component: () => import('layouts/AdminLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Users.vue') },
-      {
-        path: 'users',
-        children: [
-          { path: '', component: () => import('pages/Users.vue') },
-          { path: 'new', component: () => import('pages/addUser.vue') }
-        ]
-      }
+      { path: 'new', component: () => import('pages/addUser.vue') }
     ]
   },
-  {
-    path: '/anonymization',
-    component: () => import('layouts/ClientLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/BeforeAnon.vue') },
-      {
-        path: 'before',
-        children: [
-          { path: '', component: () => import('pages/BeforeAnon.vue') },
-        ]
-      },
-      {
-        path: 'after',
-        children: [
-          { path: '', component: () => import('pages/AfterAnon.vue') },
-        ]
-      }
-    ]
-  },
+  // {
+  //   path: '/anonymization',
+  //   component: () => import('layouts/ClientLayout.vue'),
+  //   children: [
+  //     { path: '', component: () => import('pages/BeforeAnon.vue') },
+  //     {
+  //       path: 'before',
+  //       children: [
+  //         { path: '', component: () => import('pages/BeforeAnon.vue') },
+  //       ]
+  //     },
+  //     {
+  //       path: 'after',
+  //       children: [
+  //         { path: '', component: () => import('pages/AfterAnon.vue') },
+  //       ]
+  //     }
+  //   ]
+  // },
 
-  // Always leave this as last one,
-  // but you can also remove it
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/Error404.vue')

@@ -1,5 +1,6 @@
 <template>
-  <img src="~assets/wave.png" class="wave" alt="login-wave">
+  
+  <img src="~assets/blue-wave.svg" class="wave" alt="login-wave">
   <div class="row" style="height: 90vh">
     <div class="col-0 col-md-6 flex justify-center content-center">
       <!-- <img src="~assets/login.svg" class="responsive" alt="login-image"> -->
@@ -47,6 +48,7 @@
 
 <script>
 import { Notify } from 'quasar'
+import { getToken } from 'src/store/auth/getters'
 import { defineComponent } from 'vue'
 import { mapActions, mapGetters } from 'vuex'
 

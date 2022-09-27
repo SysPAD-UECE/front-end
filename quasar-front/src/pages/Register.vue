@@ -1,5 +1,5 @@
 <template>
-  <img src="~assets/wave.png" class="wave" alt="register-wave">
+  <img src="~assets/blue-wave.svg" class="wave" alt="register-wave">
   <div class="row" style="height: 90vh">
     <div class="col-0 col-md-6 flex justify-center content-center">
       <!--<img src="~assets/login.svg" class="responsive" alt="register-image">-->
@@ -7,9 +7,7 @@
     <div class="col-12 col-md-6 flex content-center">
       <q-card style='width: 80%'>
         <q-card-section>
-          <q-avatar size="103px" class="absolute-center shadow-10">
-            <img src="~assets/avatar.svg" alt="avatar">
-          </q-avatar>
+          <q-avatar size="150px" class="absolute-center" icon="face"/>
         </q-card-section>
         <q-card-section>
           <div class="q-pt-lg">
