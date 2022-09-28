@@ -1,5 +1,5 @@
 <template>
-  
+
   <img src="~assets/blue-wave.svg" class="wave" alt="login-wave">
   <div class="row" style="height: 90vh">
     <div class="col-0 col-md-6 flex justify-center content-center">
@@ -48,7 +48,7 @@
 
 <script>
 import { Notify } from 'quasar'
-import { getToken } from 'src/store/auth/getters'
+import useAuthUser from 'src/composables/UseAuthUser'
 import { defineComponent } from 'vue'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -66,7 +66,8 @@ export default defineComponent({
   computed: {
     ...mapGetters('auth', ['getMe']),
     ...mapGetters('auth', ['isAuthenticated']),
-    ...mapGetters('auth', ['apiData'])
+    ...mapGetters('auth', ['apiData']),
+
   },
   methods: {
     ...mapActions('auth', ['doLogin']),

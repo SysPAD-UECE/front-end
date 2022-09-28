@@ -1,6 +1,5 @@
 import { boot } from 'quasar/wrappers'
 import axios from 'axios'
-import { getToken } from 'src/store/auth/getters'
 
 // Be careful when using SSR for cross-request state pollution
 // due to creating a Singleton instance here;
@@ -13,9 +12,9 @@ const api = axios.create({ baseURL: 'http://localhost:5000' })
 
 
 export default boot(({ app }) => {
-  
+
   // for use inside Vue files (Options API) through this.$axios and this.$api
-  
+
 
   app.config.globalProperties.$axios = axios
   // ^ ^ ^ this will allow you to use this.$axios (for Vue Options API form)
@@ -25,5 +24,7 @@ export default boot(({ app }) => {
   // ^ ^ ^ this will allow you to use this.$api (for Vue Options API form)
   //       so you can easily perform requests against your app's API
 })
+
+
 
 export { api }

@@ -1,5 +1,5 @@
 <template>
-    
+
     <q-page class="container" padding>
       <q-card>
         <div class="q-pa-md q-gutter-sm">
@@ -12,21 +12,21 @@
           <div class="q-pa-md">
             <q-card v-show='!this.$q.loading.isActive'>
               <q-card-section class="">
-              
+
                       <q-form class="">
-                        
+
                         <q-select filled v-model="tables" :options="tables" label="Select Table" stack-label
                           :dense="true" :options-dense="true" option-label="name" option-value="" />
-                         
+
                           <div class="">
                           <q-btn color="primary" label="salvar" @click="salvar = true" />
                         <q-btn color="primary" label="voltar" @click="recarregar = true" left="30px" />
                         </div>
-                     
-                      </q-form>
-                      
 
-                
+                      </q-form>
+
+
+
               </q-card-section>
             </q-card>
           </div>
@@ -49,7 +49,7 @@
       </q-card>
     </q-page>
   </template>
-  
+
   <script>
   import { Notify, Loading } from 'quasar'
   import { api } from 'src/boot/axios'
@@ -57,28 +57,28 @@
   import { mapGetters } from 'vuex'
   import { ref } from 'vue'
 import LoginVue from './Login.vue'
-  
-  
-  
+
+
+
   const tablesList = []
-  
-  
+
+
   const columnsList = ['nome', 'cpf']
   const columns = [
-  
-  
-  
+
+
+
     {
       label: 'tablesList',
-  
+
       field: 'tablesList',
-  
+
       name: 'tablesList',
-  
+
       align: 'left'
     },
-  
-  
+
+
     {
       label: 'columnsList',
       field: row => row.columnsList,
@@ -86,15 +86,15 @@ import LoginVue from './Login.vue'
       align: 'left',
       sortable: true
     },
-  
-  
+
+
     {
       label: 'Anonymizaçao',
-  
+
       field: 'actions',
-  
+
       name: 'actions',
-  
+
       align: 'left'
     }
   ]
@@ -105,9 +105,9 @@ import LoginVue from './Login.vue'
     rowsPerPage: 10
   })
   let rows = tablesList.slice(0).map(r => ({ ...r }))
-  
-  
-  
+
+
+
   rows.forEach((row, index) => {
     row.index = index
   })
@@ -115,7 +115,7 @@ import LoginVue from './Login.vue'
   rows.forEach(() => {
     model.value.push('');
   })
-  
+
   export default defineComponent({
     name: 'anonymizationConfig',
     computed: {
@@ -135,7 +135,7 @@ import LoginVue from './Login.vue'
           port: '',
           password: ''
         },
-        
+
         tables: [],
         validdatabases: [],
         tablesList,
@@ -158,15 +158,25 @@ import LoginVue from './Login.vue'
           console.log(err)
         })
       },
-  
-  
+
+      getTableDatabase() {
+        if (!this.getToken) return
+        Loading.show()
+        api.post('/gcolumnsDatabase', 6).then(response => {
+          this.tables = response.data
+          Loading.hide()
+        }).catch(err => {
+          console.log(err)
+        })
+      },
+
     },
     mounted() {
       this.getValidDatabases()
     }
   })
   </script>
-  
+
   <style scoped>
   .wave {
     position: fixed;

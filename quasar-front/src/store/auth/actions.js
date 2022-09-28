@@ -3,6 +3,7 @@ import { api } from 'src/boot/axios'
 export const doLogin = async ({ commit, dispatch }, payload) => {
   await api.post('/login', payload).then(response => {
     const token = response.data.token
+    localStorage.setItem('localToken', token)
     commit('setToken', token)
     api.defaults.headers.common.Authorization = 'JWT' + token.access
     dispatch('getMe', token)
