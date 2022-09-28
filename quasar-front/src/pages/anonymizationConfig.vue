@@ -16,7 +16,7 @@
                       <q-form class="">
 
                         <q-select filled v-model="tables" :options="tables" label="Select Table" stack-label
-                          :dense="true" :options-dense="true" option-label="name" option-value="" />
+                          :dense="true" :options-dense="true" option-label="name" option-value=this.tableSeted />
 
                           <div class="">
                           <q-btn color="primary" label="salvar" @click="salvar = true" />
@@ -135,7 +135,10 @@ import LoginVue from './Login.vue'
           port: '',
           password: ''
         },
-
+        databaseConfig: {
+          id: ''
+        },
+        tableSeted: '',
         tables: [],
         validdatabases: [],
         tablesList,
@@ -162,7 +165,20 @@ import LoginVue from './Login.vue'
       getTableDatabase() {
         if (!this.getToken) return
         Loading.show()
-        api.post('/gcolumnsDatabase', 6).then(response => {
+        console.log(this.databaseConfig.id)
+        api.post('/columnsDatabase', ).then(response => {
+          this.tables = response.data
+          Loading.hide()
+        }).catch(err => {
+          console.log(err)
+        })
+      },
+
+      getColumnsDatabase() {
+        if (!this.getToken) return
+        Loading.show()
+        console.log(this.tableSeted)
+        api.post('/columnsDatabase', ).then(response => {
           this.tables = response.data
           Loading.hide()
         }).catch(err => {
