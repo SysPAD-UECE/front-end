@@ -10,19 +10,17 @@ const routes = [
   },
   {
     path: '/client',
-    meta: { requiresAuth: true },
     component: () => import('layouts/ClientLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Databases.vue') },
       { path: 'databases', component: () => import('pages/Databases.vue') },
       { path: 'token', component: () => import('pages/Token.vue')},
-      // path: 'anonymization', component: () => import ('pages/anonymization.vue')},
-      { path: 'anonymizationconfig', component: () => import('pages/anonymizationConfig.vue')}
-    ]
-    // , meta: {
-    //  requiresAuth: true
-    // }
+      { path: 'anonymization', component: () => import ('pages/Anonymization.vue')},
+      { path: 'anonymizationconfig', name:'anonymizationConfig', component: () => import('pages/anonymizationConfig.vue')},
+      //{ path: 'anonymizationconfig/:id', name: 'anony', component: () => import('pages/anonymizationConfig.vue')}
+    ],
   },
+
   {
     path: '/admin',
     component: () => import('layouts/AdminLayout.vue'),

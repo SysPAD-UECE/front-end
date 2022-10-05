@@ -17,7 +17,7 @@
   </q-card>
 
   <div class="row justify-between q-px-md">
-      <small class="text-caption text-weight-thin">This Token is valid for 1 hour</small>
+      <small class="text-caption text-weight-thin"></small>
       <q-btn label="COPY TO CLIPBOARD" color="primary" @click="copyToClipboards()" />
   </div>
 

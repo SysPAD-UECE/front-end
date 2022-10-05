@@ -2,13 +2,12 @@
   <q-layout view="hHh lpR fFf">
     <q-header elevated>
       <q-toolbar>
-      
+
 
         <q-toolbar-title>
-          <q-avatar>
-            <img src="https://cdn-icons-png.flaticon.com/512/2491/2491010.png">
-          </q-avatar>
-          FRIDA Anonymization
+          <q-toolbar-title>
+          Data Security System
+        </q-toolbar-title>
         </q-toolbar-title>
         <q-btn flat dense round icon="home" aria-label="HomePage" to="/">
           <q-tooltip>Home</q-tooltip>

@@ -1,204 +1,161 @@
 <template>
+  <q-page padding>
+    <q-card>
 
-    <q-page class="container" padding>
-      <q-card>
-        <div class="q-pa-md q-gutter-sm">
-          <q-breadcrumbs>
-            <q-breadcrumbs-el icon="home" to="/" />
-            <q-breadcrumbs-el label="Anonymization Configuration" icon="hotel_class" to="/client/anonymizationconfig" />
-          </q-breadcrumbs>
-        </div>
-        <div id="q-app">
-          <div class="q-pa-md">
-            <q-card v-show='!this.$q.loading.isActive'>
-              <q-card-section class="">
+      <div class="q-pa-md q-gutter-sm">
+        <q-breadcrumbs>
+          <q-breadcrumbs-el icon="home" to="/" />
+          <q-breadcrumbs-el label="Anonymization" icon="hotel_class" to="/client/anonymization" />
+          <q-breadcrumbs-el label="Setting Anonimyzation" icon="star" to="/client/anonymizationconfig" />
+        </q-breadcrumbs>
+      </div>
 
-                      <q-form class="">
+      <q-form>
+        <div class="q-px-md">Select table</div>
+        <q-card-section class="row justify-between">
+          <q-select class="col q-pr-md" filled v-model="tableName" :options="tableList" :dense="true" :options-dense="true"
+           option-value="" >{{ this.tableName }}</q-select>
 
-                        <q-select filled v-model="tables" :options="tables" label="Select Table" stack-label
-                          :dense="true" :options-dense="true" option-label="name" option-value=this.tableSeted />
-
-                          <div class="">
-                          <q-btn color="primary" label="salvar" @click="salvar = true" />
-                        <q-btn color="primary" label="voltar" @click="recarregar = true" left="30px" />
-                        </div>
-
-                      </q-form>
-
-
-
-              </q-card-section>
-            </q-card>
+          <div>
+            <q-btn color="primary col-4" label="SEND" @click="getColumnsDatabase()" />
           </div>
-        </div>
-        <q-card class="my-card">
-          <q-table row-key="id" v-model="firstDialog" v-model:pagination="pagination" :rows="rows" :columns="columns"
-            :rows-per-page-options="[10, 20, 30, 40, 50, 100, 0]">
-            <template v-slot:body="props">
-              <q-tr :props="props">
-                <q-td key="name" :props="props">
-                  {{ props.row.name }}
-                </q-td>
-                <q-td key="type" :props="props">
-                  {{ props.row.type}}
-                </q-td>
-              </q-tr>
-            </template>
-          </q-table>
-        </q-card>
+        </q-card-section>
+      </q-form>
+
+
+
+      <q-card class="my-card">
+
+        <q-table row-key="columnsList" :rows="rows2" :columns="columns">
+
+        </q-table>
       </q-card>
-    </q-page>
-  </template>
+    </q-card>
+  </q-page>
+</template>
 
-  <script>
-  import { Notify, Loading } from 'quasar'
-  import { api } from 'src/boot/axios'
-  import { defineComponent } from 'vue'
-  import { mapGetters } from 'vuex'
-  import { ref } from 'vue'
-import LoginVue from './Login.vue'
-
-
-
-  const tablesList = []
-
-
-  const columnsList = ['nome', 'cpf']
-  const columns = [
+<script>
+import { Notify, Loading } from 'quasar'
+import { api } from 'src/boot/axios'
+import { defineComponent } from 'vue'
+import { mapGetters } from 'vuex'
+import { ref } from 'vue'
 
 
 
-    {
-      label: 'tablesList',
+const comlumnsList = []
+const dataType = []
 
-      field: 'tablesList',
+// {
+//   label: 'Anonymizaçao',
 
-      name: 'tablesList',
+//   field: 'actions',
 
-      align: 'left'
-    },
+//   name: 'actions',
 
+//   align: 'left'
+// }
+// ]
 
-    {
-      label: 'columnsList',
-      field: row => row.columnsList,
-      name: 'columnsList',
-      align: 'left',
-      sortable: true
-    },
+// let rows = comlumnsList.slice(0).map(r => ({ ...r }))
 
+// rows.forEach((row, index) => {
+//   row.index = index
+// })
 
-    {
-      label: 'Anonymizaçao',
+// const model = ref([]);
+// rows.forEach(() => {
+//   model.value.push('');
+// })
 
-      field: 'actions',
-
-      name: 'actions',
-
-      align: 'left'
-    }
-  ]
-  const pagination = ref({
-    sortBy: 'database',
-    descending: false,
-    page: 1,
-    rowsPerPage: 10
-  })
-  let rows = tablesList.slice(0).map(r => ({ ...r }))
-
-
-
-  rows.forEach((row, index) => {
-    row.index = index
-  })
-  const model = ref([]);
-  rows.forEach(() => {
-    model.value.push('');
-  })
-
-  export default defineComponent({
-    name: 'anonymizationConfig',
+export default defineComponent({
+  name: 'anonymizationConfig',
+  computed: {
     computed: {
-      computed: {
-        ...mapGetters('auth', ['getToken']),
-        ...mapGetters('auth', ['isAuthenticated'])
-      },
+      ...mapGetters('auth', ['getToken']),
+      ...mapGetters('auth', ['isAuthenticated'])
     },
-    data() {
-      return {
-        database: {
-          id_db_type: ref('MySQL'),
-          test: ref('public'),
-          name: '',
-          host: '',
-          user: '',
-          port: '',
-          password: ''
-        },
-        databaseConfig: {
-          id: ''
-        },
-        tableSeted: '',
-        tables: [],
-        validdatabases: [],
-        tablesList,
-        columnsList,
-        columns
+  },
+  data() {
+    const columns = [
+      {
+        label: 'Columns',
+
+        field: 'comlumnsList',
+
+        name: 'comlumnsList',
+
+        align: 'left'
+      },
+      {
+        label: 'Data Type',
+        field: 'dataType',
+        name: 'dataType',
+        align: 'left',
+        sortable: true
       }
-    },
-    methods: {
-      getValidDatabases() {
-        if (!this.getToken) return
-        Loading.show()
-        api.get('/getValidDatabases', {
-          headers: {
-            Authorization: `Bearer ${this.getToken}`
-          }
-        }).then(response => {
-          this.validdatabases = response.data
-          Loading.hide()
-        }).catch(err => {
-          console.log(err)
-        })
+    ]
+    const rows2 = [
+      {
+        comlumnsList: '',
+        dataType: ''
+      }
+    ]
+    return {
+      database: {
+        tableName: ref(null),
+        ip_database: '',
       },
+      validdatabases: [],
 
-      getTableDatabase() {
-        if (!this.getToken) return
-        Loading.show()
-        console.log(this.databaseConfig.id)
-        api.post('/columnsDatabase', ).then(response => {
-          this.tables = response.data
-          Loading.hide()
-        }).catch(err => {
-          console.log(err)
-        })
-      },
-
-      getColumnsDatabase() {
-        if (!this.getToken) return
-        Loading.show()
-        console.log(this.tableSeted)
-        api.post('/columnsDatabase', ).then(response => {
-          this.tables = response.data
-          Loading.hide()
-        }).catch(err => {
-          console.log(err)
-        })
-      },
-
-    },
-    mounted() {
-      this.getValidDatabases()
+      columns,
+      tableList: [],
+      selectTable: '', rows2
     }
-  })
-  </script>
+  },
+  methods: {
+    getTableList() {
+      console.log(this.ip_database)
+      if (!window.localStorage.getItem('localToken')) return
 
-  <style scoped>
-  .wave {
-    position: fixed;
-    height: 100%;
-    left: 0;
-    bottom: 0;
-    z-index: -1;
+      api.post('/tablesDatabase', { id_db: this.ip_database }, {
+        headers: {
+          Authorization: `Bearer ${window.localStorage.getItem('localToken')}`
+        }
+      }).then(response => {
+
+        this.tableList = response.data.tables
+        console.log(this.tableList)
+        // Loading.hide()
+      }).catch(err => {
+        console.log(err.mesage)
+      })
+    },
+    getColumnsDatabase() {
+
+      if (!window.localStorage.getItem('localToken')) return
+
+      const data = {
+        id_db: this.ip_database,
+        table: this.tableName
+      }
+      console.log(this.tableName)
+      api.post('/columnsDatabase', data, {
+        headers: { 'Content-type': 'application/json', Authorization: `Bearer ${window.localStorage.getItem('localToken')}` }
+      }).then(response => {
+        console.log("não deu erro")
+        var keys = Object.keys(response.data)
+        var values = Object.values(response.data)
+        console.log(response.data)
+      }).catch(err => {
+        console.log(err.mesage)
+      })
+    }
+  },
+  created() {
+    this.ip_database = this.$route.params.data
+    console.log(this.ip_database)
+    this.getTableList()
   }
-  </style>
+})
+</script>

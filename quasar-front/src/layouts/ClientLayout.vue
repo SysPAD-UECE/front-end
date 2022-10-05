@@ -5,10 +5,7 @@
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
-          <q-avatar>
-            <img src="https://cdn-icons-png.flaticon.com/512/2491/2491010.png">
-          </q-avatar>
-          FRIDA Anonymization
+          Data Security System
         </q-toolbar-title>
 
         <q-btn flat dense round icon="home" aria-label="HomePage" to="/">
@@ -48,14 +45,15 @@
           </q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple to="/client/anonymizationConfig" active-class="q-item-no-link-highlighting">
+        <q-item clickable v-ripple to="/client/anonymization" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
-            <q-avatar icon="table_view" />
+            <q-avatar icon="hotel_class" />
           </q-item-section>
           <q-item-section>
             Anonymization
           </q-item-section>
         </q-item>
+
         <!-- <q-item clickable v-ripple to="/anonymization" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-avatar icon="hotel_class" />
@@ -65,7 +63,7 @@
           </q-item-section>
         </q-item> -->
 
-        <q-item clickable v-ripple to="/token" active-class="q-item-no-link-highlighting">
+        <q-item clickable v-ripple to="/client/token" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-avatar icon="key" />
           </q-item-section>
