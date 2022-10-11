@@ -95,12 +95,7 @@ export default defineComponent({
         sortable: true
       }
     ]
-    const rows2 = [
-      {
-        comlumnsList: '',
-        dataType: ''
-      }
-    ]
+    const rows2 = []
     return {
       database: {
         tableName: ref(null),
@@ -140,13 +135,24 @@ export default defineComponent({
         table: this.tableName
       }
       console.log(this.tableName)
-      api.post('/columnsDatabase', data, {
-        headers: { 'Content-type': 'application/json', Authorization: `Bearer ${window.localStorage.getItem('localToken')}` }
+      console.log(this.tableName)
+      api.post('/columnsDatabase', data, { headers: { Authorization: `Bearer ${window.localStorage.getItem('localToken')}`}
       }).then(response => {
-        console.log("não deu erro")
-        var keys = Object.keys(response.data)
-        var values = Object.values(response.data)
+        if (this.rows2.length != 0) this.rows2 = []
         console.log(response.data)
+        const keys = Object.keys(response.data)
+        const value = Object.values(response.data)
+        // const valiavel = []
+
+        keys.forEach((key, id) => {
+          this.rows2.push({
+            comlumnsList: key,
+            dataType: value[id]
+
+          })
+        })
+
+        console.log(this.rows2)
       }).catch(err => {
         console.log(err.mesage)
       })
