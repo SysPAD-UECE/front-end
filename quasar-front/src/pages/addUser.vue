@@ -70,7 +70,7 @@ export default defineComponent({
         email: this.register.email,
         password: this.register.password
       }
-      api.post('http://localhost:5000/register', data, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
+      api.post('./register', data, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
         console.log(res.data)
         Notify.create({
           type: 'positive',

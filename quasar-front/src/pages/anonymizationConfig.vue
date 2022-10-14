@@ -13,21 +13,21 @@
       <q-form>
         <div class="q-px-md">Select table</div>
         <q-card-section class="row justify-between">
-          <q-select class="col q-pr-md" filled v-model="tableName" :options="tableList" :dense="true" :options-dense="true"
-           option-value="" >{{ this.tableName }}</q-select>
-
+          <q-select class="col q-pr-md" filled v-model="tableName" :options="tableList" :dense="true"
+            :options-dense="true" option-value=""></q-select>
           <div>
             <q-btn color="primary col-4" label="SEND" @click="getColumnsDatabase()" />
           </div>
         </q-card-section>
       </q-form>
-
-
-
       <q-card class="my-card">
-
         <q-table row-key="columnsList" :rows="rows2" :columns="columns">
-
+          <template v-slot:body-cell-anonymization="props">
+            <q-select filled v-model="model[props.row.index]"
+              :options="[{ label: 'Não sensível', value: 'one' },{ label: 'Data making', value: 'dois' }, { label: 'Pseudonymization', value: 'tres' }]"
+              label="Selecione a anonymizacao" color="teal" clearable options-selected-class="text-deep-orange">{{this.model}}
+            </q-select>
+          </template>
         </q-table>
       </q-card>
     </q-card>
@@ -41,33 +41,6 @@ import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
 import { ref } from 'vue'
 
-
-
-const comlumnsList = []
-const dataType = []
-
-// {
-//   label: 'Anonymizaçao',
-
-//   field: 'actions',
-
-//   name: 'actions',
-
-//   align: 'left'
-// }
-// ]
-
-// let rows = comlumnsList.slice(0).map(r => ({ ...r }))
-
-// rows.forEach((row, index) => {
-//   row.index = index
-// })
-
-// const model = ref([]);
-// rows.forEach(() => {
-//   model.value.push('');
-// })
-
 export default defineComponent({
   name: 'anonymizationConfig',
   computed: {
@@ -76,36 +49,53 @@ export default defineComponent({
       ...mapGetters('auth', ['isAuthenticated'])
     },
   },
+
   data() {
     const columns = [
       {
         label: 'Columns',
-
         field: 'comlumnsList',
-
         name: 'comlumnsList',
-
         align: 'left'
       },
       {
         label: 'Data Type',
-        field: 'dataType',
+
+        field: row => row.dataType,
         name: 'dataType',
-        align: 'left',
-        sortable: true
+        align: 'left'
+      },
+      {
+        label: 'Anonymization',
+        field: 'anonymization',
+        name: 'anonymization',
+        align: 'left'
       }
     ]
-    const rows2 = []
-    return {
-      database: {
-        tableName: ref(null),
-        ip_database: '',
-      },
-      validdatabases: [],
 
+    const rows2 = []
+    const model = ref([])
+
+    let rows = rows2.slice(0).map(r => ({ ...r }))
+
+    rows.forEach((row, index) => {
+      row.index = index
+    })
+
+    rows.forEach(() => {
+      model.value.push('');
+    })
+
+    return {
+      tableName: ref(null),
+      ip_database: '',
       columns,
       tableList: [],
-      selectTable: '', rows2
+      selectTable: '',
+      rows2,
+      shape: ref('line'),
+      model,
+      rows
     }
   },
   methods: {
@@ -136,22 +126,26 @@ export default defineComponent({
       }
       console.log(this.tableName)
       console.log(this.tableName)
-      api.post('/columnsDatabase', data, { headers: { Authorization: `Bearer ${window.localStorage.getItem('localToken')}`}
+      api.post('/columnsDatabase', data, {
+        headers: { Authorization: `Bearer ${window.localStorage.getItem('localToken')}` }
       }).then(response => {
         if (this.rows2.length != 0) this.rows2 = []
         console.log(response.data)
         const keys = Object.keys(response.data)
         const value = Object.values(response.data)
         // const valiavel = []
+        console.log("parangole")
+        console.log(response.data)
 
         keys.forEach((key, id) => {
           this.rows2.push({
             comlumnsList: key,
-            dataType: value[id]
+            dataType: value[id],
+            index: id
 
           })
         })
-
+        console.log("oui")
         console.log(this.rows2)
       }).catch(err => {
         console.log(err.mesage)

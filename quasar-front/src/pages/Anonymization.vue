@@ -83,7 +83,7 @@ export default defineComponent({
         port: database.port,
         password: database.password
       }
-      api.post('http://localhost:5000/test_connection', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
+      api.post('./test_connection', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
         Notify.create({
           type: 'positive',
           message: res.data.message,
@@ -108,7 +108,7 @@ export default defineComponent({
         port: this.database.port,
         password: this.database.password
       }
-      api.post('http://localhost:5000/addDatabase', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
+      api.post('./addDatabase', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
         Notify.create({
           type: 'positive',
           message: res.data.message,
