@@ -57,7 +57,7 @@ export default defineComponent({
   data() {
     return {
       login: {
-        email: 'michael@gmail.com',
+        email: 'admin@gmail.com',
         password: '12345'
       },
       isPwd: true

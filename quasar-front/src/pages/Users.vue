@@ -5,7 +5,7 @@
         <div class="text-h6 text-grey-8">
           Users
           <q-btn label="Add" class="float-right text-capitalize shadow-3" color="primary" icon="person_add"
-            to='/admin/users/new' />
+            to='/admin/user/new' />
         </div>
       </q-card-section>
       <q-card-section class="q-pa-none">

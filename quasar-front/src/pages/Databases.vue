@@ -214,11 +214,8 @@ export default defineComponent({
         message: 'Do you really want to delete this database?',
         cancel: true
       }).onOk(async () => {
-        api.post('/deleteDatabase', { id: id }, {
-          headers: {
-            Authorization: `Bearer ${this.getToken}`
-          }
-        }).then(response => {
+        console.log(id)
+        api.delete('./deleteDatabase', { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` }, data: { id_db: id } }).then(response => {
           Notify.create({
             type: 'positive',
             message: response.data.message,

@@ -5,7 +5,7 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/Login.vue') },
       { path: 'login', name: 'login', component: () => import('pages/Login.vue') },
-      { path: '/register', component: () => import('pages/Register.vue')}
+      { path: '/register', component: () => import('pages/Register.vue') }
     ]
   },
   {
@@ -14,9 +14,9 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/Databases.vue') },
       { path: 'databases', component: () => import('pages/Databases.vue') },
-      { path: 'token', component: () => import('pages/Token.vue')},
-      { path: 'anonymization', component: () => import ('pages/Anonymization.vue')},
-      { path: 'anonymizationconfig', name:'anonymizationConfig', component: () => import('pages/anonymizationConfig.vue')},
+      { path: 'token', component: () => import('pages/Token.vue') },
+      { path: 'anonymization', component: () => import('pages/Anonymization.vue') },
+      { path: 'anonymizationconfig', name: 'anonymizationConfig', component: () => import('pages/anonymizationConfig.vue') },
       //{ path: 'anonymizationconfig/:id', name: 'anony', component: () => import('pages/anonymizationConfig.vue')}
     ],
   },
@@ -26,7 +26,13 @@ const routes = [
     component: () => import('layouts/AdminLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Users.vue') },
-      { path: 'new', component: () => import('pages/addUser.vue') }
+      {
+        path: 'user',
+        children: [
+          { path: '', component: () => import('pages/Users.vue') },
+          { path: 'new', component: () => import('pages/addUser.vue') }
+        ]
+      }
     ]
   },
   // {
