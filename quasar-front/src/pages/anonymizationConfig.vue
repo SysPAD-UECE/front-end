@@ -44,12 +44,9 @@ import { ref } from 'vue'
 export default defineComponent({
   name: 'anonymizationConfig',
   computed: {
-    computed: {
       ...mapGetters('auth', ['getToken']),
       ...mapGetters('auth', ['isAuthenticated'])
     },
-  },
-
   data() {
     const columns = [
       {
@@ -88,7 +85,7 @@ export default defineComponent({
 
     return {
       tableName: ref(null),
-      ip_database: '',
+      id_database: '',
       columns,
       tableList: [],
       selectTable: '',
@@ -100,15 +97,14 @@ export default defineComponent({
   },
   methods: {
     getTableList() {
-      console.log(this.ip_database)
-      if (!window.localStorage.getItem('localToken')) return
-
-      api.post('/tablesDatabase', { id_db: this.ip_database }, {
+      if (!this.getToken) return
+      api.post('./tablesDatabase', { 'id_db': this.id_database }, {
         headers: {
-          Authorization: `Bearer ${window.localStorage.getItem('localToken')}`
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.getToken}`
         }
       }).then(response => {
-
+        console.log("oiwwww")
         this.tableList = response.data.tables
         console.log(this.tableList)
         // Loading.hide()
@@ -117,17 +113,16 @@ export default defineComponent({
       })
     },
     getColumnsDatabase() {
-
-      if (!window.localStorage.getItem('localToken')) return
+      if (!this.getToken) return
 
       const data = {
-        id_db: this.ip_database,
+        id_db: this.id_database,
         table: this.tableName
       }
       console.log(this.tableName)
       console.log(this.tableName)
       api.post('/columnsDatabase', data, {
-        headers: { Authorization: `Bearer ${window.localStorage.getItem('localToken')}` }
+        headers: { Authorization: `Bearer ${this.getToken}` }
       }).then(response => {
         if (this.rows2.length != 0) this.rows2 = []
         console.log(response.data)
@@ -153,9 +148,9 @@ export default defineComponent({
     }
   },
   created() {
-    this.ip_database = this.$route.params.data
-    console.log(this.ip_database)
-    this.getTableList()
+    this.id_database = this.$route.params.data
+    console.log(this.id_database)
+    this.getTableList();
   }
 })
 </script>

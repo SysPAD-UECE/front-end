@@ -50,7 +50,7 @@
         </q-table>
       </q-card-section>
 <q-card-section class="row">
-      <q-btn color="primary col grow" to='./client/anonymization'>Go to Anonymyzation</q-btn>
+      <q-btn color="primary col grow" to='/client/anonymization'>Go to Anonymyzation</q-btn>
 </q-card-section>
     </q-card>
 
@@ -156,16 +156,18 @@ export default defineComponent({
       })
     },
     submitTestConnection(database) {
+      console.log(JSON.stringify(database.name_db_type))
       if (!this.getToken) return
       const data = {
         type: database.name_db_type,
         name: database.name,
         host: database.host,
         user: database.user,
-        port: database.port,
+        port: JSON.stringify(database.port),
         password: database.password
       }
-      api.post('./test_connection', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
+      console.log(data)
+      api.post('./testConnectionDatabase', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
         Notify.create({
           type: 'positive',
           message: res.data.message,
