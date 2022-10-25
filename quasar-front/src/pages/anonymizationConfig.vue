@@ -24,8 +24,8 @@
         <q-table row-key="columnsList" :rows="rows2" :columns="columns">
           <template v-slot:body-cell-anonymization="props">
             <q-select filled v-model="model[props.row.index]"
-              :options="[{ label: 'Não sensível', value: 'one' },{ label: 'Data making', value: 'dois' }, { label: 'Pseudonymization', value: 'tres' }]"
-              label="Selecione a anonymizacao" color="teal" clearable options-selected-class="text-deep-orange">{{this.model}}
+              :options="select_anonymization"
+              label="Selecione a anonymizacao" color="teal" clearable options-selected-class="text-deep-orange"  >{{this.model}}
             </q-select>
           </template>
         </q-table>
@@ -88,6 +88,8 @@ export default defineComponent({
       id_database: '',
       columns,
       tableList: [],
+      select_anonymization: [],
+      anonymization: [],
       selectTable: '',
       rows2,
       shape: ref('line'),
@@ -96,6 +98,35 @@ export default defineComponent({
     }
   },
   methods: {
+
+    getAnonymizationType() {
+      console.log("getAnonymizationType chamado")
+      if(!this.getToken) return
+      api.get('/getAnonymizationType', {
+        headers: {
+          Authorization: `Bearer ${this.getToken}`
+        }
+      }).then(response => {
+
+        response.data.forEach((key, id) => {
+          this.select_anonymization.push(key.name)
+          this.anonymization.push({
+            id: key.id,
+            name: key.name
+          })
+        })
+        console.log(this.select_anonymization)
+        console.log(response.data)
+        this.anonymization.forEach((key) => {
+          if (key.name == "ppcbtf") {
+            console.log(key.id)
+          }
+        })
+        //Loading.hide()
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     getTableList() {
       if (!this.getToken) return
       api.post('./tablesDatabase', { 'id_db': this.id_database }, {
@@ -114,13 +145,10 @@ export default defineComponent({
     },
     getColumnsDatabase() {
       if (!this.getToken) return
-
       const data = {
         id_db: this.id_database,
         table: this.tableName
       }
-      console.log(this.tableName)
-      console.log(this.tableName)
       api.post('/columnsDatabase', data, {
         headers: { Authorization: `Bearer ${this.getToken}` }
       }).then(response => {
@@ -128,20 +156,14 @@ export default defineComponent({
         console.log(response.data)
         const keys = Object.keys(response.data)
         const value = Object.values(response.data)
-        // const valiavel = []
-        console.log("parangole")
-        console.log(response.data)
-
+        this.getAnonymizationType()
         keys.forEach((key, id) => {
           this.rows2.push({
             comlumnsList: key,
             dataType: value[id],
             index: id
-
           })
         })
-        console.log("oui")
-        console.log(this.rows2)
       }).catch(err => {
         console.log(err.mesage)
       })
