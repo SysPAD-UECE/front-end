@@ -50,7 +50,7 @@
         </q-table>
       </q-card-section>
 <q-card-section class="row">
-      <q-btn color="primary col grow" to='/client/anonymization'>Go to Anonymyzation</q-btn>
+      <q-btn color="primary col grow" to='/client/anonymization'>Go to Anonymization</q-btn>
 </q-card-section>
     </q-card>
 
@@ -248,6 +248,7 @@ export default defineComponent({
       validdatabases: [],
       addDialog: ref(false),
       columns: [
+
         {
           name: 'id',
           label: 'ID',
@@ -297,7 +298,14 @@ export default defineComponent({
           align: 'left',
           sortable: true
         },
-        { name: 'action', label: 'Actions', field: 'Action', sortable: false, align: 'center' }
+        { name: 'action', label: 'Actions', field: 'Action', sortable: false, align: 'center' },
+        {
+          name: 'status',
+          label: 'Status',
+          field: 'status',
+          align: 'left',
+          sortable: true
+        }
       ],
       databases: []
     }

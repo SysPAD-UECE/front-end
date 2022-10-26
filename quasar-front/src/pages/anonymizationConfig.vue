@@ -4,7 +4,7 @@
 
       <div class="q-pa-md q-gutter-sm">
         <q-breadcrumbs>
-          <q-breadcrumbs-el icon="home" to="/" />
+          <q-breadcrumbs-el icon="home" to="" />
           <q-breadcrumbs-el label="Anonymization" icon="hotel_class" to="/client/anonymization" />
           <q-breadcrumbs-el label="Setting Anonimyzation" icon="star" to="/client/anonymizationconfig" />
         </q-breadcrumbs>

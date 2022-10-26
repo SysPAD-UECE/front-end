@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
     <q-breadcrumbs>
-      <q-breadcrumbs-el icon="home" to="/" />
+      <q-breadcrumbs-el icon="home" to="" />
       <q-breadcrumbs-el label="Anonymization" icon="hotel_class" to="/client/anonymization" />
     </q-breadcrumbs>
     <q-card-section>
@@ -19,8 +19,8 @@
       </q-table>
 
     </q-card-section>
-    <div class="q-mt-md row"  v-if="selected.length != 0">
-        <q-btn color="primary col grow" @click="shareData(selected[0].id)">Send Database</q-btn></div>
+    <div class="q-mt-md row" >
+        <q-btn color="primary col grow" :disabled="!isSelected()" @click="shareData(selected[0].id)">Configure Anonymization</q-btn></div>
   </div>
 </template>
 
@@ -38,6 +38,9 @@ export default defineComponent({
   },
 
   methods: {
+    isSelected(){
+      return this.selected.length != 0
+    },
     shareData(selected_id) {
       this.$router.push({ name: "anonymizationConfig", params: { data: selected_id } })
     },

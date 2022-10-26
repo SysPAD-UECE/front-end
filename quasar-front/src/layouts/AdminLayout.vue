@@ -5,12 +5,9 @@
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
-          <q-avatar>
-            <img src="https://cdn-icons-png.flaticon.com/512/2491/2491010.png">
-          </q-avatar>
-          Admin Panel
+          Data Protection System
         </q-toolbar-title>
-        <q-btn flat dense round icon="home" aria-label="HomePage" to="/">
+        <q-btn flat dense round icon="home" aria-label="HomePage" to="">
           <q-tooltip>Home</q-tooltip>
         </q-btn>
         <q-btn flat dense round icon="account_circle" aria-label="Account" v-if="!isAuthenticated" to="/login">

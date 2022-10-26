@@ -1,12 +1,17 @@
 <template>
   <div class="q-pa-md" v-show='!this.$q.loading.isActive'>
+    <q-card-section>
+      <div class="text-h6">Administrator Panel</div>
+    </q-card-section>
     <q-card>
       <q-card-section>
         <div class="text-h6 text-grey-8">
           Users
-          <q-btn label="Add" class="float-right text-capitalize shadow-3" color="primary" icon="person_add"
-            to='/admin/user/new' />
+          <div class="float-right q-pt-sm"> <q-btn label="Add" class="text-capitalize shadow-3" color="primary" icon="person_add"
+            to='/admin/user/new' /></div>
+
         </div>
+        <div>Remove or edit registered users</div>
       </q-card-section>
       <q-card-section class="q-pa-none">
         <q-table :rows="users" :columns="columns" row-key="name" class="col">

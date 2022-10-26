@@ -5,10 +5,10 @@
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
-          Data Security System
+          Data Protection System
         </q-toolbar-title>
 
-        <q-btn flat dense round icon="home" aria-label="HomePage" to="/">
+        <q-btn flat dense round icon="home" aria-label="HomePage" to="">
           <q-tooltip>Home</q-tooltip>
         </q-btn>
         <q-btn flat dense round icon="account_circle" aria-label="Account" v-if="!isAuthenticated" to="/login">
@@ -63,14 +63,6 @@
           </q-item-section>
         </q-item> -->
 
-        <q-item clickable v-ripple to="/client/token" active-class="q-item-no-link-highlighting">
-          <q-item-section avatar>
-            <q-avatar icon="key" />
-          </q-item-section>
-          <q-item-section>
-            Access Token
-          </q-item-section>
-        </q-item>
 
       </q-list>
     </q-drawer>
