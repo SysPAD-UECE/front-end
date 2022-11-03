@@ -3,7 +3,7 @@
     <q-card>
       <q-card-section class="q-pa-md q-gutter-sm">
       <q-breadcrumbs>
-        <q-breadcrumbs-el icon="home" to="/" />
+        <q-breadcrumbs-el icon="home" to="/client/home" />
         <q-breadcrumbs-el label="Databases" icon="table_view" to="/client/databases" />
       </q-breadcrumbs>
       </q-card-section>

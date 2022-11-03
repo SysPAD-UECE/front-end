@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md q-gutter-sm">
     <q-breadcrumbs>
-      <q-breadcrumbs-el icon="home" to="" />
+      <q-breadcrumbs-el icon="home" to="/client/home" />
       <q-breadcrumbs-el label="Anonymization" icon="hotel_class" to="/client/anonymization" />
     </q-breadcrumbs>
     <q-card-section>

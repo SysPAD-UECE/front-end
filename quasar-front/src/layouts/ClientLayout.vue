@@ -8,7 +8,7 @@
           Data Protection System
         </q-toolbar-title>
 
-        <q-btn flat dense round icon="home" aria-label="HomePage" to="">
+        <q-btn flat dense round icon="home" aria-label="HomePage" to="/client/home">
           <q-tooltip>Home</q-tooltip>
         </q-btn>
         <q-btn flat dense round icon="account_circle" aria-label="Account" v-if="!isAuthenticated" to="/login">
@@ -36,6 +36,15 @@
           Options
         </q-item-label>
 
+        <q-item clickable v-ripple to="/client/home" active-class="q-item-no-link-highlighting">
+          <q-item-section avatar>
+            <q-avatar icon="home" />
+          </q-item-section>
+          <q-item-section>
+            Home
+          </q-item-section>
+        </q-item>
+        
         <q-item clickable v-ripple to="/client/databases" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-avatar icon="table_view" />
@@ -53,6 +62,8 @@
             Anonymization
           </q-item-section>
         </q-item>
+
+       
 
         <!-- <q-item clickable v-ripple to="/anonymization" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>

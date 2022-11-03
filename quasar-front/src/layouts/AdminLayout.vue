@@ -7,7 +7,7 @@
         <q-toolbar-title>
           Data Protection System
         </q-toolbar-title>
-        <q-btn flat dense round icon="home" aria-label="HomePage" to="">
+        <q-btn flat dense round icon="home" aria-label="HomePage" to="/client/home">
           <q-tooltip>Home</q-tooltip>
         </q-btn>
         <q-btn flat dense round icon="account_circle" aria-label="Account" v-if="!isAuthenticated" to="/login">
