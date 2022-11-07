@@ -94,7 +94,8 @@ export default defineComponent({
       rows2,
       shape: ref('line'),
       model,
-      rows
+      rows,
+      columns2: []
     }
   },
   methods: {
@@ -158,16 +159,31 @@ export default defineComponent({
         const value = Object.values(response.data)
         this.getAnonymizationType()
         keys.forEach((key, id) => {
+          this.columns2.push(key)
           this.rows2.push({
             comlumnsList: key,
             dataType: value[id],
             index: id
           })
         })
+        this.updateModel()
       }).catch(err => {
         console.log(err.mesage)
       })
+    },
+    updateModel(){
+      var arr = []
+      arr = JSON.parse(JSON.stringify(this.columns2))
+      console.log('teste array:')
+      let length = arr.length
+      console.log(length)
+
+      arr.forEach((key)=>{
+        this.model.push('Not sensitive')
+      })
+      console.log(model)
     }
+
   },
   created() {
     this.id_database = this.$route.params.data
