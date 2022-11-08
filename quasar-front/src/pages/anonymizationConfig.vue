@@ -35,6 +35,9 @@
         <div>
           <q-btn color="primary col-4" label="SEND" @click="sendDataAnonymization()" />
         </div>
+        <div>
+          <q-btn color="primary col-4" label="TEST" @click="testGetAnony()" />
+        </div>
       </q-card-section>
 
     </q-card>
@@ -55,35 +58,49 @@ export default defineComponent({
     ...mapGetters('auth', ['isAuthenticated'])
   },
   methods: {
-    // sendAnonymization() {
-    //   console.log("sendAnonymization chamado")
-    //   const data = {
-    //     id_db: this.id_database,
-    //     id_anonymization_type: id_anonymization,
-    //     table_name: this.tableName,
-    //     columns_to_anonymization
-    //   }
-    //   if(!this.getToken) return
-    //   api.get('/addAnonymization', {
-    //     headers: {
-    //       Authorization: `Bearer ${this.getToken}`
-    //     }
-    //   }).then(response => {
+    testGetAnony() {
+
+      if(!this.getToken) return
+      api.get('/getAnonymization', {
+        headers: {
+          Authorization: `Bearer ${this.getToken}`
+        }
+      }).then(response => {
+        console.log(response.data[0].table)
+
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    sendAnonymization(id_anonymization, columns_to_anonymization) {
+      console.log("sendAnonymization chamado")
+      const data = {
+        id_db: this.id_database,
+        id_anonymization_type: id_anonymization,
+        table: this.tableName,
+        columns: columns_to_anonymization
+      }
+      console.log(data)
+      if(!this.getToken) return
+      api.post('/addAnonymization', data, {
+        headers: {
+          Authorization: `Bearer ${this.getToken}`
+        }
+      }).then(response => {
 
 
-    //   }).catch(err => {
-    //     console.log(err)
-    //   })
-    // },
+      }).catch(err => {
+        console.log(err)
+      })
+    },
     sendDataAnonymization() {
       console.log('sendDataAnonymization')
 
       var anonymizationJSON = []
       anonymizationJSON = JSON.parse(JSON.stringify(this.anonymization))
-      console.log(anonymizationJSON)
+
       var modelJSON = []
       modelJSON = JSON.parse(JSON.stringify(this.model))
-      console.log(modelJSON)
 
       var dict_anonymization = new Object()
 
@@ -91,31 +108,29 @@ export default defineComponent({
         dict_anonymization[key.name] = key.id
       })
 
-      console.log(dict_anonymization)
-
       var columns_to_anonymization = new Object()
 
       modelJSON.forEach((key, index) => {
-        console.log('for')
+
         let type = dict_anonymization[key]
-        console.log(type)
 
         if(typeof columns_to_anonymization[type] === 'undefined'){
           var new_array = []
-          new_array.push(index)
+          new_array.push(this.columns_list[index])
           columns_to_anonymization[type] = new_array
         }
         else {
           var new_array = []
           new_array = columns_to_anonymization[type]
-          new_array.push(index)
+          new_array.push(this.columns_list[index])
           columns_to_anonymization[type] = new_array
         }
-        console.log(columns_to_anonymization)
       })
 
-      console.log(columns_to_anonymization)
-
+      this.anonymization.forEach((key) => {
+        let anonymization_id = key.id
+        this.sendAnonymization(anonymization_id, columns_to_anonymization[anonymization_id])
+      })
 
     },
     getAnonymizationType() {
@@ -175,6 +190,7 @@ export default defineComponent({
         console.log(response.data)
         const keys = Object.keys(response.data)
         const value = Object.values(response.data)
+        this.columns_list = keys
         this.getAnonymizationType()
         keys.forEach((key, id) => {
           this.columns2.push(key)
@@ -249,7 +265,8 @@ export default defineComponent({
       shape: ref('line'),
       model,
       rows,
-      columns2: []
+      columns2: [],
+      columns_list: []
     }
   },
   created() {
