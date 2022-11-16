@@ -1,7 +1,8 @@
-import { store } from 'quasar/wrappers'
-import { createStore } from 'vuex'
+import { store } from 'quasar/wrappers';
+import { createStore } from 'vuex';
+import createPersistedState from "vuex-persistedstate";
 
-import auth from './auth'
+import auth from './auth';
 
 /*
  * If not building with SSR mode, you can
@@ -20,7 +21,8 @@ export default store(function (/* { ssrContext } */) {
 
     // enable strict mode (adds overhead!)
     // for dev mode and --debug builds only
-    strict: process.env.DEBUGGING
+    strict: process.env.DEBUGGING,
+    plugins: [createPersistedState()]
   })
 
   return Store
