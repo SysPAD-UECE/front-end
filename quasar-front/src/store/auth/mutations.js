@@ -3,6 +3,10 @@ export const setToken = (state, token) => {
   state.isAuthenticated = true
 }
 
+export const setAuthenticated = (state, value) => {
+  state.isAuthenticated = value
+}
+
 export const removeToken = (state, token) => {
   state.token = ''
   state.isAuthenticated = false

@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import { Notify, Dialog, Loading } from 'quasar'
+import { Notify, Dialog, Loading, LocalStorage } from 'quasar'
 import { api } from 'src/boot/axios'
 import { defineComponent, ref } from 'vue'
 import { mapGetters } from 'vuex'
@@ -123,6 +123,9 @@ export default defineComponent({
   },
 
   methods: {
+    getLocalToken(){
+      this.token = LocalStorage.getItem('localToken')
+    },
     isComplete() {
       console.log(this.database.id_db_type && this.database.name && this.database.host && this.database.user && this.database.port && this.database.password);
       return this.database.id_db_type && this.database.name && this.database.host && this.database.user && this.database.port && this.database.password;
@@ -142,6 +145,7 @@ export default defineComponent({
       })
     },
     getDatabases() {
+      console.log(this.isAuthenticated)
       if (!this.getToken) return
       Loading.show()
       api.get('/getDatabases', {
@@ -236,6 +240,7 @@ export default defineComponent({
   },
   data() {
     return {
+      token: '',
       database: {
         id_db_type: ref(null),
         name: '',
@@ -311,8 +316,10 @@ export default defineComponent({
     }
   },
   mounted() {
+    this.getLocalToken()
     this.getDatabases()
     this.getValidDatabases()
+
   }
 })
 </script>

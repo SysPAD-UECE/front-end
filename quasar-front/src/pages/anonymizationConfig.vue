@@ -25,19 +25,18 @@
           <template v-slot:body-cell-anonymization="props">
             <q-select filled v-model="model[props.row.index]" :options="select_anonymization"
               label="Selecione a anonymizacao" color="teal" clearable options-selected-class="text-deep-orange">
-              {{ this.model }}
             </q-select>
           </template>
         </q-table>
       </q-card-section>
 
       <q-card-section>
-        <div>
-          <q-btn color="primary col-4" label="SEND" @click="sendDataAnonymization()" />
+        <div class="q-mt-md row" >
+          <q-btn color="primary col grow" label="test" @click="sendDataAnonymization()" />
         </div>
-        <div>
+        <!-- <div>
           <q-btn color="primary col-4" label="TEST" @click="testGetAnony()" />
-        </div>
+        </div> -->
       </q-card-section>
 
     </q-card>
@@ -58,15 +57,42 @@ export default defineComponent({
     ...mapGetters('auth', ['isAuthenticated'])
   },
   methods: {
-    testGetAnony() {
-
+    testEncrypt() {
+      const data = {
+        'id_db': parseInt(this.id_database),
+        'table': this.tableName
+      }
+      console.log(data)
       if(!this.getToken) return
-      api.get('/getAnonymization', {
+      api.post('/encryptDatabase', data, {
         headers: {
           Authorization: `Bearer ${this.getToken}`
         }
       }).then(response => {
-        console.log(response.data[0].table)
+        console.log("deubom")
+        console.log(response.data)
+        this.testGetAnony()
+
+      }).catch(err => {
+        console.log(err)
+      })
+    },
+    testGetAnony() {
+      console.log("TESTE GET ANONY FUNCIONANDO")
+      const data = {
+        'id_db': this.id_database,
+        'table': this.tableName
+      }
+      if(!this.getToken) return
+      api.post('/anonymizationDatabase', data, {
+        headers: {
+          'Content-Type': 'application/json',
+
+          Authorization: `Bearer ${this.getToken}`
+        }
+      }).then(response => {
+        console.log("deubom")
+        console.log(response.data)
 
       }).catch(err => {
         console.log(err)
@@ -131,7 +157,7 @@ export default defineComponent({
         let anonymization_id = key.id
         this.sendAnonymization(anonymization_id, columns_to_anonymization[anonymization_id])
       })
-
+      this.testEncrypt()
     },
     getAnonymizationType() {
       console.log("getAnonymizationType chamado")
@@ -169,8 +195,7 @@ export default defineComponent({
           Authorization: `Bearer ${this.getToken}`
         }
       }).then(response => {
-        console.log("oiwwww")
-        this.tableList = response.data.tables
+        this.tableList = response.data
         console.log(this.tableList)
         // Loading.hide()
       }).catch(err => {

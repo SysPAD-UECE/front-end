@@ -7,6 +7,7 @@ export function getToken (state) {
 }
 
 export function isAuthenticated (state) {
+  console.log(state.isAuthenticated)
   return state.isAuthenticated
 }
 

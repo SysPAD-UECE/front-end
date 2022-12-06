@@ -14,12 +14,16 @@ const routes = [
     children: [
       { path: '', component: () => import('pages/Databases.vue') },
       { path: 'databases', component: () => import('pages/Databases.vue') },
-      
+
       { path: 'anonymization', component: () => import('pages/Anonymization.vue') },
       { path: 'home', component: () => import('pages/Home.vue') },
       { path: 'anonymizationconfig', name: 'anonymizationConfig', component: () => import('pages/anonymizationConfig.vue') },
       //{ path: 'anonymizationconfig/:id', name: 'anony', component: () => import('pages/anonymizationConfig.vue')}
+
     ],
+    meta: {
+      requiresAuth: true,
+   },
   },
 
   {
