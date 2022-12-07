@@ -21,7 +21,8 @@
       </q-form>
 
       <q-card-section class="my-card">
-        <q-table row-key="columnsList" :rows="rows2" :columns="columns">
+        <q-table hide-header
+      hide-bottom  :rows-per-page-options="[this.columns_list.length]" row-key="columnsList" :rows="rows2" :columns="columns">
           <template v-slot:body-cell-anonymization="props">
             <q-select filled v-model="model[props.row.index]" :options="select_anonymization"
               label="Selecione a anonymizacao" color="teal" clearable options-selected-class="text-deep-orange">
