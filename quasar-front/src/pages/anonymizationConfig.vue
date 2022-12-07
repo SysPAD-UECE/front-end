@@ -36,7 +36,7 @@
           <q-btn v-if="(this.contador != 6)" color="primary col grow" label="ADD COLUMNS" @click="sendDataAnonymization()" />
         </div>
         <div class="q-mt-md row" >
-          <q-btn v-if="(this.contador === 6)" color="grey col grow" label="ANONYMIZATION" @click="testGetAnony()" />
+          <q-btn v-if="(this.contador === 6)" color="grey col grow" label="ANONYMIZATION" @click="testEncrypt()" />
         </div>
         <!-- <div>
           <q-btn color="primary col-4" label="TEST" @click="testGetAnony()" />
