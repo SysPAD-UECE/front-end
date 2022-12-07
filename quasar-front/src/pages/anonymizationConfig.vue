@@ -33,14 +33,17 @@
 
       <q-card-section>
         <div class="q-mt-md row" >
-          <q-btn color="primary col grow" label="SEND COLUMNS TO ANONYMIZATION" @click="sendDataAnonymization()" />
+          <q-btn color="primary col grow" label="ADD COLUMNS" @click="sendDataAnonymization()" />
+        </div>
+        <div class="q-mt-md row" >
+          <q-btn v-if="(this.contador === 6)" label="teste" @click="testGetAnony()" />
         </div>
         <!-- <div>
           <q-btn color="primary col-4" label="TEST" @click="testGetAnony()" />
         </div> -->
       </q-card-section>
 
-   
+
 
     </q-card>
   </q-page>
@@ -66,6 +69,7 @@ export default defineComponent({
         'id_db': parseInt(this.id_database),
         'table': this.tableName
       }
+
       console.log(data)
       if(!this.getToken) return
       Loading.show()
@@ -76,6 +80,7 @@ export default defineComponent({
       }).then(response => {
         console.log(response.data)
         Loading.hide()
+
         this.alertAnonymizationStarted()
         this.testGetAnony()
 
@@ -118,13 +123,15 @@ export default defineComponent({
       }
       console.log(data)
       if(!this.getToken) return
+      Loading.show()
       api.post('/addAnonymization', data, {
         headers: {
           Authorization: `Bearer ${this.getToken}`
         }
       }).then(response => {
-
-
+        this.contador = this.contador + 1
+        console.log(response.data)
+        Loading.hide()
       }).catch(err => {
         console.log(err)
       })
@@ -162,12 +169,21 @@ export default defineComponent({
           columns_to_anonymization[type] = new_array
         }
       })
-
+      let cont = 0;
       this.anonymization.forEach((key) => {
+        this.contador = 0
         let anonymization_id = key.id
         this.sendAnonymization(anonymization_id, columns_to_anonymization[anonymization_id])
+        cont = cont +1;
+        console.log("index" + cont)
+
       })
-      this.testEncrypt()
+      // console.log(cont)
+      // console.log(anonymization)
+      // if(cont === this.anonymization.length){
+      //   console.log("iojdjn")
+      //   this.testGetAnony()
+      // }
     },
     getAnonymizationType() {
       console.log("getAnonymizationType chamado")
@@ -259,7 +275,8 @@ export default defineComponent({
         title: 'Alert',
         message: 'Anonymization started, you will be notificated when it ends.'
       }).onOk(() => {
-        this.$router.push('./databases')
+        // this.$router.push('./databases')
+        // console.log('OK')
       }).onCancel(() => {
         // console.log('Cancel')
       }).onDismiss(() => {
@@ -287,7 +304,7 @@ export default defineComponent({
         align: 'left'
       }
     ]
-
+    let contador = 0
     const rows2 = []
     const model = ref([])
 
@@ -315,7 +332,8 @@ export default defineComponent({
       rows,
       columns2: [],
       columns_list: [],
-      alertAnonymizationStarted
+      alertAnonymizationStarted,
+      contador
     }
   },
   created() {
