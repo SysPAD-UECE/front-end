@@ -15,7 +15,7 @@
           <q-select class="col q-pr-md" filled v-model="tableName" :options="tableList" :dense="true"
             :options-dense="true" option-value=""></q-select>
           <div>
-            <q-btn color="primary col-4" v-if="this.model.length == 0" label="SEND" @click="getColumnsDatabase()" />
+            <q-btn color="primary col-4" label="SELECT" @click="getColumnsDatabase()" />
           </div>
         </q-card-section>
       </q-form>
@@ -25,7 +25,7 @@
       hide-bottom  :rows-per-page-options="[this.columns_list.length]" row-key="columnsList" :rows="rows2" :columns="columns">
           <template v-slot:body-cell-anonymization="props">
             <q-select filled v-model="model[props.row.index]" :options="select_anonymization"
-              label="Selecione a anonymizacao" color="teal" clearable options-selected-class="text-deep-orange">
+              label="Select Anonymization Type" color="teal" clearable options-selected-class="text-deep-orange">
             </q-select>
           </template>
         </q-table>
@@ -33,12 +33,14 @@
 
       <q-card-section>
         <div class="q-mt-md row" >
-          <q-btn color="primary col grow" label="test" @click="sendDataAnonymization()" />
+          <q-btn color="primary col grow" label="SEND COLUMNS TO ANONYMIZATION" @click="sendDataAnonymization()" />
         </div>
         <!-- <div>
           <q-btn color="primary col-4" label="TEST" @click="testGetAnony()" />
         </div> -->
       </q-card-section>
+
+   
 
     </q-card>
   </q-page>
@@ -50,6 +52,7 @@ import { api } from 'src/boot/axios'
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
 import { ref } from 'vue'
+import { useQuasar } from 'quasar'
 
 export default defineComponent({
   name: 'anonymizationConfig',
@@ -65,13 +68,15 @@ export default defineComponent({
       }
       console.log(data)
       if(!this.getToken) return
+      Loading.show()
       api.post('/encryptDatabase', data, {
         headers: {
           Authorization: `Bearer ${this.getToken}`
         }
       }).then(response => {
-        console.log("deubom")
         console.log(response.data)
+        Loading.hide()
+        this.alertAnonymizationStarted()
         this.testGetAnony()
 
       }).catch(err => {
@@ -85,16 +90,20 @@ export default defineComponent({
         'table': this.tableName
       }
       if(!this.getToken) return
+
       api.post('/anonymizationDatabase', data, {
         headers: {
           'Content-Type': 'application/json',
-
           Authorization: `Bearer ${this.getToken}`
         }
       }).then(response => {
         console.log("deubom")
         console.log(response.data)
-
+        Notify.create({
+          type: 'positive',
+          message: 'Anonymization completed!',
+          timeout: 1000
+        })
       }).catch(err => {
         console.log(err)
       })
@@ -244,6 +253,19 @@ export default defineComponent({
 
   },
   data() {
+    const $q = useQuasar()
+    function alertAnonymizationStarted () {
+      $q.dialog({
+        title: 'Alert',
+        message: 'Anonymization started, you will be notificated when it ends.'
+      }).onOk(() => {
+        this.$router.push('./databases')
+      }).onCancel(() => {
+        // console.log('Cancel')
+      }).onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      })
+    }
     const columns = [
       {
         label: 'Columns',
@@ -292,7 +314,8 @@ export default defineComponent({
       model,
       rows,
       columns2: [],
-      columns_list: []
+      columns_list: [],
+      alertAnonymizationStarted
     }
   },
   created() {

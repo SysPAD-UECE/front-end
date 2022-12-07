@@ -304,13 +304,13 @@ export default defineComponent({
           sortable: true
         },
         { name: 'action', label: 'Actions', field: 'Action', sortable: false, align: 'center' },
-        {
-          name: 'status',
-          label: 'Status',
-          field: 'status',
-          align: 'left',
-          sortable: true
-        }
+        // {
+        //   name: 'status',
+        //   label: 'Status',
+        //   field: 'status',
+        //   align: 'left',
+        //   sortable: true
+        // }
       ],
       databases: []
     }

@@ -1,6 +1,6 @@
 <template>
    <q-card class="text-h5 q-pa-sm q-pl-md q-ma-md">
-    Projeto de Proteção de Dados baseado em Técnicas de Anonimização 
+    About Data Protection Project 
   </q-card>
   <div class="q-pa-md row">
     <q-card class="my-card text-white col q-mr-md">
@@ -16,7 +16,7 @@
     <div class="my-card text-white col">
       <q-card-section>
         <div class="q-pa-md">
-          <q-video :ratio="16 / 9" src="https://www.youtube.com/embed/uHKfrz65KSU" />
+          <q-video :ratio="16 / 9" src="" />
         </div>
         <q-card-section class="row justify-around">
           

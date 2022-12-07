@@ -26,5 +26,27 @@ export default route(function (/* { store, ssrContext } */) {
 
   })
 
+  Router.beforeEach((to, from, next) => {
+    if (to.matched.some((record) => record.meta.requiresAuth)) {
+      if (localStorage.getItem("localToken") == null) {
+        next({
+          path: "/login",
+          params: { nextUrl: to.fullPath },
+        });
+      } else {
+        if (!isAuthenticated) {
+          next({
+            path: "/login",
+            params: { nextUrl: to.fullPath },
+          });
+        } else {
+          next();
+        }
+      }
+    } else {
+      next();
+    }
+  });
+
   return Router;
 })
