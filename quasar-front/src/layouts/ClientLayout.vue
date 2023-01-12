@@ -1,6 +1,11 @@
 <template>
   <q-layout view="hHh lpR fFf">
     <q-header elevated>
+      <div id="app">
+        <auto-logout>
+          <div v-if="warningZone">are you still here?</div>
+        </auto-logout>
+      </div>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
@@ -44,7 +49,7 @@
             Home
           </q-item-section>
         </q-item>
-        
+
         <q-item clickable v-ripple to="/client/databases" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-avatar icon="table_view" />
@@ -63,7 +68,7 @@
           </q-item-section>
         </q-item>
 
-       
+
 
         <!-- <q-item clickable v-ripple to="/anonymization" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
@@ -121,17 +126,66 @@ export default defineComponent({
     ...mapGetters('auth', ['isAuthenticated']),
     ...mapGetters('auth', ['getMe'])
   },
+  data: function () {
+    return {
+      events: ['click', 'mousemove', 'mousedown', 'scroll', 'keypress', 'load'],
+
+      warningTimer: null,
+      logoutTimer: null,
+      warningZone: false,
+    }
+  },
+  mounted() {
+    this.events.forEach(function (event) {
+      window.addEventListener(event, this.resetTimer);
+    }, this);
+    this.setTimers();
+  },
+  destroyed() {
+    this.events.forEach(function (event) {
+      window.removeEventListener(event, this.resetTimer);
+    }, this); d
+    this.resetTimer();
+  },
 
   methods: {
     logout() {
       this.$store.dispatch('auth/signOut')
       this.$router.push('/login')
-    }
-  },
+    },
+    setTimers: function () {
+      this.warningTimer = setTimeout(this.warningMessage, 50 * 1000);
+      this.logoutTimer = setTimeout(this.logoutUser, 94 * 1000);
 
+      this.warningZone = false;
+
+    },
+
+    warningMessage: function () {
+
+      this.warningZone = true;
+
+
+    },
+    logoutUser: function () {
+      this.$store.dispatch('auth/signOut')
+      this.$router.push('/login')
+
+    },
+    resetTimer: function () {
+      clearTimeout(this.warningTimer);
+      clearTimeout(this.logoutTimer);
+
+
+      this.setTimers();
+    }
+
+
+  },
   setup() {
     const leftDrawerOpen = ref(false)
     const rightDrawerOpen = ref(false)
+    const $q = ref(false)
 
     return {
       leftDrawerOpen,
@@ -142,8 +196,17 @@ export default defineComponent({
       rightDrawerOpen,
       toggleRightDrawer() {
         rightDrawerOpen.value = !rightDrawerOpen.value
+      },
+      showNotif() {
+        $q.notify({
+          message: 'Jim pinged you.',
+          caption: '5 minutes ago',
+          color: 'secondary'
+        })
       }
+
     }
   }
 })
+
 </script>
