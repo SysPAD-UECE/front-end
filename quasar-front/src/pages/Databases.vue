@@ -2,10 +2,10 @@
   <div class="q-pa-md" v-show='!this.$q.loading.isActive'>
     <q-card>
       <q-card-section class="q-pa-md q-gutter-sm">
-      <q-breadcrumbs>
-        <q-breadcrumbs-el icon="home" to="/client/home" />
-        <q-breadcrumbs-el label="Databases" icon="table_view" to="/client/databases" />
-      </q-breadcrumbs>
+        <q-breadcrumbs>
+          <q-breadcrumbs-el icon="home" to="/client/home" />
+          <q-breadcrumbs-el label="Databases" icon="table_view" to="/client/databases" />
+        </q-breadcrumbs>
       </q-card-section>
       <q-card-section>
         <div class="text-h6 text-grey-8">
@@ -38,6 +38,8 @@
               <q-btn color="red" icon="delete" size="sm" class="q-ml-sm" flat dense @click="submitDelete(props.row.id)">
                 <q-tooltip>Delete</q-tooltip>
               </q-btn>
+              <q-btn color="blue" icon="search" size="sm" class="q-ml-sm" flat dense
+                @click="$router.replace('/client/show')" />
             </q-td>
           </template>
           <!--<template v-slot:top-right>
@@ -49,9 +51,9 @@
       </template>-->
         </q-table>
       </q-card-section>
-<q-card-section class="row">
-      <q-btn color="primary col grow" to='/client/anonymization'>Go to Anonymization</q-btn>
-</q-card-section>
+      <q-card-section class="row">
+        <q-btn color="primary col grow" to='/client/anonymization'>Go to Anonymization</q-btn>
+      </q-card-section>
     </q-card>
 
     <q-dialog v-model="addDialog">
@@ -62,9 +64,8 @@
           </q-card-section>
 
           <q-card-section class="row flex-center">
-            <q-select class="col-8 " filled v-model="database.id_db_type" :options="validdatabases"
-              label="Database Type" stack-label :dense="true" :options-dense="true" option-label="name" option-value=""
-              :rules="[
+            <q-select class="col-8 " filled v-model="database.id_db_type" :options="validdatabases" label="Database Type"
+              stack-label :dense="true" :options-dense="true" option-label="name" option-value="" :rules="[
                 val => !!val || 'Database type is empty'
               ]" />
             <q-input class="col-8 " stack-label label="Name" v-model="database.name" :rules="[
@@ -82,10 +83,9 @@
             <q-input class="col-8 " stack-label label="Password" :type="isPwd ? 'password' : 'text'"
               v-model="database.password" :rules="[
                 val => !!val || 'Password is empty'
-              ]" >
+              ]">
               <template v-slot:append>
-                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                  @click="isPwd = !isPwd" />
+                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
               </template>
             </q-input>
           </q-card-section>
@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import { Notify, Dialog, Loading, LocalStorage } from 'quasar'
+import { Notify, Dialog, Loading } from 'quasar'
 import { api } from 'src/boot/axios'
 import { defineComponent, ref } from 'vue'
 import { mapGetters } from 'vuex'
@@ -123,38 +123,37 @@ export default defineComponent({
   },
 
   methods: {
-    getLocalToken(){
-      this.token = LocalStorage.getItem('localToken')
-    },
     isComplete() {
       console.log(this.database.id_db_type && this.database.name && this.database.host && this.database.user && this.database.port && this.database.password);
       return this.database.id_db_type && this.database.name && this.database.host && this.database.user && this.database.port && this.database.password;
     },
     getValidDatabases() {
       if (!this.getToken) return
+
       Loading.show()
-      api.get('/getValidDatabases', {
+      api.get('/valid_database', {
         headers: {
           Authorization: `Bearer ${this.getToken}`
         }
       }).then(response => {
-        this.validdatabases = response.data
+        /// console.log("validdata"+response.data)
+        this.validdatabases = response.data.items
         Loading.hide()
       }).catch(err => {
         console.log(err)
       })
     },
     getDatabases() {
-      console.log(this.isAuthenticated)
       if (!this.getToken) return
       Loading.show()
-      api.get('/getDatabases', {
+      api.get('/database', {
         headers: {
           Authorization: `Bearer ${this.getToken}`
         }
       }).then(response => {
-        this.databases = response.data
+        this.databases = response.data.items
         Loading.hide()
+        console.log(this.databases)
       }).catch(err => {
         console.log(err)
       })
@@ -189,14 +188,14 @@ export default defineComponent({
     submitAddDatabase() {
       if (!this.getToken) return
       const data = {
-        id_db_type: this.database.id_db_type.id,
+        valid_database_id: this.database.id_db_type.id,
         name: this.database.name,
         host: this.database.host,
-        user: this.database.user,
-        port: this.database.port,
+        username: this.database.user,
+        port: parseInt(this.database.port),
         password: this.database.password
       }
-      api.post('./addDatabase', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
+      api.post('./database', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
         Notify.create({
           type: 'positive',
           message: res.data.message,
@@ -240,7 +239,6 @@ export default defineComponent({
   },
   data() {
     return {
-      token: '',
       database: {
         id_db_type: ref(null),
         name: '',
@@ -262,9 +260,9 @@ export default defineComponent({
           sortable: true
         },
         {
-          name: 'type',
+          name: 'valid_database_name',
           label: 'Type',
-          field: 'name_db_type',
+          field: 'valid_database_name',
           align: 'left',
           sortable: true
         },
@@ -283,9 +281,9 @@ export default defineComponent({
           sortable: true
         },
         {
-          name: 'user',
+          name: 'username',
           label: 'User',
-          field: 'user',
+          field: 'username',
           align: 'left',
           sortable: true
         },
@@ -304,22 +302,20 @@ export default defineComponent({
           sortable: true
         },
         { name: 'action', label: 'Actions', field: 'Action', sortable: false, align: 'center' },
-        // {
-        //   name: 'status',
-        //   label: 'Status',
-        //   field: 'status',
-        //   align: 'left',
-        //   sortable: true
-        // }
+        /*{
+          name: 'status',
+          label: 'Status',
+          field: 'status',
+          align: 'left',
+          sortable: true
+        }*/
       ],
       databases: []
     }
   },
   mounted() {
-    this.getLocalToken()
     this.getDatabases()
     this.getValidDatabases()
-
   }
 })
 </script>

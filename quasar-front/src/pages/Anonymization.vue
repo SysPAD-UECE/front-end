@@ -19,8 +19,10 @@
       </q-table>
 
     </q-card-section>
-    <div class="q-mt-md row" >
-        <q-btn color="primary col grow" :disabled="!isSelected()" @click="shareData(selected[0].id)">Configure Anonymization</q-btn></div>
+    <div class="q-mt-md row">
+      <q-btn color="primary col grow" :disabled="!isSelected()" @click="shareData(selected[0].id)">Configure
+        Anonymization</q-btn>
+    </div>
   </div>
 </template>
 
@@ -38,7 +40,7 @@ export default defineComponent({
   },
 
   methods: {
-    isSelected(){
+    isSelected() {
       return this.selected.length != 0
     },
     shareData(selected_id) {
@@ -51,7 +53,7 @@ export default defineComponent({
     getValidDatabases() {
       if (!this.getToken) return
       Loading.show()
-      api.get('/getValidDatabases', {
+      api.get('/valid_database', {
         headers: {
           Authorization: `Bearer ${this.getToken}`
         }
@@ -65,13 +67,14 @@ export default defineComponent({
     getDatabases() {
       if (!this.getToken) return
       Loading.show()
-      api.get('/getDatabases', {
+      api.get('/database', {
         headers: {
           Authorization: `Bearer ${this.getToken}`
         }
       }).then(response => {
-        this.databases = response.data
+        this.databases = response.data.items
         Loading.hide()
+        console.log(this.databases)
       }).catch(err => {
         console.log(err)
       })
@@ -202,9 +205,9 @@ export default defineComponent({
           sortable: true
         },
         {
-          name: 'user',
+          name: 'username',
           label: 'User',
-          field: 'user',
+          field: 'username',
           align: 'left',
           sortable: true
         },

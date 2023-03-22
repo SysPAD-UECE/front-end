@@ -21,8 +21,8 @@
       </q-form>
 
       <q-card-section class="my-card">
-        <q-table hide-header
-      hide-bottom  :rows-per-page-options="[this.columns_list.length]" row-key="columnsList" :rows="rows2" :columns="columns">
+        <q-table hide-header hide-bottom :rows-per-page-options="[this.columns_list.length]" row-key="columnsList"
+          :rows="rows2" :columns="columns">
           <template v-slot:body-cell-anonymization="props">
             <q-select filled v-model="model[props.row.index]" :options="select_anonymization"
               label="Select Anonymization Type" color="teal" clearable options-selected-class="text-deep-orange">
@@ -32,20 +32,38 @@
       </q-card-section>
 
       <q-card-section>
-        <div class="q-mt-md row" >
-          <q-btn v-if="(this.contador != 6)" color="primary col grow" label="ADD COLUMNS" @click="sendDataAnonymization()" />
+        <div class="q-mt-md row">
+          <q-btn v-if="(this.contador != 6)" color="primary col grow" label="ADD COLUMNS"
+            @click="sendDataAnonymization()" />
         </div>
-        <div class="q-mt-md row" >
+        <div class="q-mt-md row">
           <q-btn v-if="(this.contador === 6)" color="grey col grow" label="ANONYMIZATION" @click="testEncrypt()" />
+
         </div>
         <!-- <div>
           <q-btn color="primary col-4" label="TEST" @click="testGetAnony()" />
         </div> -->
       </q-card-section>
 
+      <q-dialog v-model="anonymization_alert">
+        <q-card>
+          <q-card-section>
+            <div class="text-h6">Alert</div>
+          </q-card-section>
 
+          <q-card-section class="q-pt-none">
+            The anonymization proccess was started sucessfully.
+          </q-card-section>
+
+          <q-card-actions align="right">
+            <q-btn flat label="OK" color="primary" onclick="location.href='./client/databases'" v-close-popup />
+          </q-card-actions>/
+        </q-card>
+      </q-dialog>
 
     </q-card>
+    check_circle
+
   </q-page>
 </template>
 
@@ -64,6 +82,7 @@ export default defineComponent({
     ...mapGetters('auth', ['isAuthenticated'])
   },
   methods: {
+
     testEncrypt() {
       const data = {
         'id_db': parseInt(this.id_database),
@@ -71,7 +90,7 @@ export default defineComponent({
       }
 
       console.log(data)
-      if(!this.getToken) return
+      if (!this.getToken) return
       Loading.show()
       api.post('/encryptDatabase', data, {
         headers: {
@@ -87,6 +106,7 @@ export default defineComponent({
       }).catch(err => {
         console.log(err)
       })
+      console.log("anonimizou")
     },
     testGetAnony() {
       console.log("TESTE GET ANONY FUNCIONANDO")
@@ -94,7 +114,7 @@ export default defineComponent({
         'id_db': this.id_database,
         'table': this.tableName
       }
-      if(!this.getToken) return
+      if (!this.getToken) return
 
       api.post('/anonymizationDatabase', data, {
         headers: {
@@ -114,6 +134,16 @@ export default defineComponent({
         console.log(err)
       })
     },
+    async junta() {
+      let response = await sendDataAnonymization()
+      if (response == database_anonymized) {
+        testEncrypt()
+      } else {
+        console.log(err)
+      }
+
+
+    },
     sendAnonymization(id_anonymization, columns_to_anonymization) {
       console.log("sendAnonymization chamado")
       const data = {
@@ -123,7 +153,7 @@ export default defineComponent({
         columns: columns_to_anonymization
       }
       console.log(data)
-      if(!this.getToken) return
+      if (!this.getToken) return
       Loading.show()
       api.post('/addAnonymization', data, {
         headers: {
@@ -158,7 +188,7 @@ export default defineComponent({
 
         let type = dict_anonymization[key]
 
-        if(typeof columns_to_anonymization[type] === 'undefined'){
+        if (typeof columns_to_anonymization[type] === 'undefined') {
           var new_array = []
           new_array.push(this.columns_list[index])
           columns_to_anonymization[type] = new_array
@@ -175,7 +205,7 @@ export default defineComponent({
         this.contador = 0
         let anonymization_id = key.id
         this.sendAnonymization(anonymization_id, columns_to_anonymization[anonymization_id])
-        cont = cont +1;
+        cont = cont + 1;
         console.log("index" + cont)
 
       })
@@ -216,14 +246,14 @@ export default defineComponent({
     },
     getTableList() {
       if (!this.getToken) return
-      api.post('./tablesDatabase', { 'id_db': this.id_database }, {
+      api.get(`database/table_names/${this.id_database}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${this.getToken}`
         }
       }).then(response => {
         this.tableList = response.data
-        console.log(this.tableList)
+        console.log(this.response)
         // Loading.hide()
       }).catch(err => {
         console.log(err.mesage)
@@ -271,7 +301,7 @@ export default defineComponent({
   },
   data() {
     const $q = useQuasar()
-    function alertAnonymizationStarted () {
+    function alertAnonymizationStarted() {
       $q.dialog({
         title: 'Alert',
         message: 'Anonymization started, you will be notificated when it ends.'
@@ -334,7 +364,8 @@ export default defineComponent({
       columns2: [],
       columns_list: [],
       alertAnonymizationStarted,
-      contador
+      contador,
+      anonymization_alert: ref(false)
     }
   },
   created() {
