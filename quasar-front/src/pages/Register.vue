@@ -7,7 +7,7 @@
     <div class="col-12 col-md-6 flex content-center">
       <q-card style='width: 80%'>
         <q-card-section>
-          <q-avatar size="150px" class="absolute-center" icon="face"/>
+          <q-avatar size="150px" class="absolute-center" icon="face" />
         </q-card-section>
         <q-card-section>
           <div class="q-pt-lg">
@@ -30,8 +30,7 @@
               val => !!val || 'Password is empty'
             ]">
               <template v-slot:append>
-                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                  @click="isPwd = !isPwd" />
+                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
               </template>
             </q-input>
             <div>
@@ -68,11 +67,11 @@ export default defineComponent({
   methods: {
     submitRegister() {
       const data = {
-        name: this.register.username,
+        username: this.register.username,
         email: this.register.email,
         password: this.register.password
       }
-      api.post('./register', data, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
+      api.post('./user', data, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
         console.log(res.data)
         Notify.create({
           type: 'positive',
