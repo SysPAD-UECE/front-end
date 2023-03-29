@@ -20,8 +20,7 @@
 
     </q-card-section>
     <div class="q-mt-md row">
-      <q-btn color="primary col grow" :disabled="!isSelected()" @click="shareData(selected[0].id)">Configure
-        Anonymization</q-btn>
+      <q-btn color="primary col grow" :disabled="!isSelected()" @click="shareData(selected[0].id)">Continue</q-btn>
     </div>
   </div>
 </template>
@@ -53,7 +52,7 @@ export default defineComponent({
     getValidDatabases() {
       if (!this.getToken) return
       Loading.show()
-      api.get('/valid_database', {
+      api.get('/valselectedDatabaseId', {
         headers: {
           Authorization: `Bearer ${this.getToken}`
         }

@@ -52,7 +52,7 @@
         </q-table>
       </q-card-section>
       <q-card-section class="row">
-        <q-btn color="primary col grow" to='/client/anonymization'>Go to Anonymization</q-btn>
+        <q-btn color="primary col grow" to='/client/anonymization'>Advance to Anonymization</q-btn>
       </q-card-section>
     </q-card>
 
@@ -131,7 +131,7 @@ export default defineComponent({
       if (!this.getToken) return
 
       Loading.show()
-      api.get('/valid_database', {
+      api.get('/valselectedDatabaseId', {
         headers: {
           Authorization: `Bearer ${this.getToken}`
         }
@@ -188,7 +188,7 @@ export default defineComponent({
     submitAddDatabase() {
       if (!this.getToken) return
       const data = {
-        valid_database_id: this.database.id_db_type.id,
+        valselectedDatabaseId_id: this.database.id_db_type.id,
         name: this.database.name,
         host: this.database.host,
         username: this.database.user,
@@ -260,9 +260,9 @@ export default defineComponent({
           sortable: true
         },
         {
-          name: 'valid_database_name',
+          name: 'valselectedDatabaseId_name',
           label: 'Type',
-          field: 'valid_database_name',
+          field: 'valselectedDatabaseId_name',
           align: 'left',
           sortable: true
         },
