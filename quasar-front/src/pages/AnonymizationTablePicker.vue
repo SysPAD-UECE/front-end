@@ -72,7 +72,7 @@ import { ref } from 'vue'
 import { useQuasar } from 'quasar'
 
 export default defineComponent({
-  name: 'anonymizationConfig',
+  name: 'anonymitazation-table-picker',
   computed: {
     ...mapGetters('auth', ['getToken']),
     ...mapGetters('auth', ['isAuthenticated'])
@@ -80,6 +80,7 @@ export default defineComponent({
   methods: {
     //refatorado
     getTableList() {
+      console.log("getTableList")
       if (!this.getToken) return
       api.get(`database/table_names/${this.selectedDatabaseId}`, {
         headers: {
@@ -88,6 +89,7 @@ export default defineComponent({
         }
       }).then(response => {
         this.tableList = response.data.table_names
+        console.log(this.tableList)
       }).catch(err => {
         console.log(err.mesage)
       })
@@ -350,8 +352,8 @@ export default defineComponent({
     }
   },
   created() {
-    this.getTableList()
     this.selectedDatabaseId = this.$route.params.data
+    this.getTableList()
   }
 })
 </script>

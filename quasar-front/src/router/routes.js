@@ -13,11 +13,16 @@ const routes = [
     component: () => import('layouts/ClientLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Home.vue') },
-      { path: 'databases', component: () => import('pages/Databases.vue') },
-      { path: 'anonymization', component: () => import('pages/Anonymization.vue') },
       { path: 'home', component: () => import('pages/Home.vue') },
-      { path: 'anonymizationconfig', name: 'anonymizationConfig', component: () => import('pages/anonymizationConfig.vue') }
-    ]
+      { path: 'databases', component: () => import('pages/Databases.vue') },
+      { path: 'anonymization',
+      children: [
+        { path: 'databases', name: 'anonymization-database-picker', component: () => import('src/pages/AnonymizationDatabasePicker.vue') },
+        { path: 'tables', name: 'anonymitazation-table-picker', component: () => import('src/pages/AnonymizationTablePicker.vue'), }
+      ],
+      redirect: './client/anonymization/databases'},
+    ],
+    redirect: './client/databases'
   },
 
   {

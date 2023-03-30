@@ -43,7 +43,7 @@ export default defineComponent({
       return this.selected.length != 0
     },
     shareData(selected_id) {
-      this.$router.push({ name: "anonymizationConfig", params: { data: selected_id } })
+      this.$router.push({ name: "anonymitazation-table-picker", params: { data: selected_id } })
     },
     isComplete() {
       console.log(this.database.id_db_type && this.database.name && this.database.host && this.database.user && this.database.port && this.database.password);

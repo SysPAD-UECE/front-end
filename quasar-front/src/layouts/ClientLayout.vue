@@ -59,7 +59,7 @@
           </q-item-section>
         </q-item>
 
-        <q-item clickable v-ripple to="/client/anonymization" active-class="q-item-no-link-highlighting">
+        <q-item clickable v-ripple to="/client/anonymization/databases" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-avatar icon="hotel_class" />
           </q-item-section>
@@ -67,19 +67,6 @@
             Anonymization
           </q-item-section>
         </q-item>
-
-
-
-        <!-- <q-item clickable v-ripple to="/anonymization" active-class="q-item-no-link-highlighting">
-          <q-item-section avatar>
-            <q-avatar icon="hotel_class" />
-          </q-item-section>
-          <q-item-section>
-            Anonymization
-          </q-item-section>
-        </q-item> -->
-
-
       </q-list>
     </q-drawer>
 
