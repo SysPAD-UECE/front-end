@@ -9,7 +9,7 @@
       </q-card-section>
       <q-card-section>
         <div class="text-h6 text-grey-8">
-          Databases
+          Databases ola
           <q-btn label="Add" class="float-right text-capitalize shadow-3" color="primary" icon="create_new_folder"
             @click="addDialog = true" />
         </div>
@@ -29,7 +29,7 @@
           <template v-slot:body-cell-action="props">
             <q-td :props="props">
               <q-btn color="yellow" icon="published_with_changes" size="sm" class="q-ml-sm" flat dense
-                @click="submitTestConnection(props.row)">
+                @click="TestConnection(props.row)">
                 <q-tooltip>Test Connection</q-tooltip>
               </q-btn>
               <q-btn color="green-7" icon="edit" size="sm" class="q-ml-sm" flat dense>
@@ -153,24 +153,40 @@ export default defineComponent({
       }).then(response => {
         this.databases = response.data.items
         Loading.hide()
-        console.log(this.databases)
+        console.log("TESTE" + JSON.stringify(this.databases))
       }).catch(err => {
         console.log(err)
       })
     },
-    submitTestConnection(database) {
-      console.log(JSON.stringify(database.name_db_type))
+    //     submitTestConnection(database_id) {
+    //   console.log(JSON.stringify(this.this.database.items.id))
+    //   if (!this.getToken) return
+
+    //   api.post('./database/test_database_connection/databases.items.id',
+    //{ headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
+    //     Notify.create({
+    //       type: 'positive',
+    //       message: res.data.message,
+    //       timeout: 1000
+    //     })
+    //   }).catch((err) => {
+    //     console.log(err)
+    //     Notify.create({
+    //       type: 'positive',
+    //       message: err.response.data.error,
+    //       timeout: 1000
+    //     })
+    //   })
+    // },
+    TestConnection(database) {
       if (!this.getToken) return
-      const data = {
-        type: database.name_db_type,
-        name: database.name,
-        host: database.host,
-        user: database.user,
-        port: JSON.stringify(database.port),
-        password: database.password
-      }
-      console.log(data)
-      api.post('./testConnectionDatabase', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
+      api.post(`./database/test_database_connection/${database.id}`, database, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.getToken}`
+        }
+      }).then((res) => {
+        console.log(res)
         Notify.create({
           type: 'positive',
           message: res.data.message,
@@ -180,11 +196,15 @@ export default defineComponent({
         console.log(err)
         Notify.create({
           type: 'negative',
-          message: err.response.data.error,
+          message: err.response.data.message,
           timeout: 1000
         })
       })
+
     },
+
+
+
     submitAddDatabase() {
       if (!this.getToken) return
       const data = {
@@ -240,6 +260,7 @@ export default defineComponent({
   data() {
     return {
       database: {
+        items: [],
         id_db_type: ref(null),
         name: '',
         host: '',
