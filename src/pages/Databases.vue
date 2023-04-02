@@ -52,7 +52,7 @@
         </q-table>
       </q-card-section>
       <q-card-section class="row">
-        <q-btn color="primary col grow" to='/client/anonymization/database'>Advance to Anonymization</q-btn>
+        <q-btn color="primary col grow" to='/client/anonymization/databases'>Advance to Anonymization</q-btn>
       </q-card-section>
     </q-card>
 
