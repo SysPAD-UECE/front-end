@@ -48,9 +48,9 @@
               <q-btn color="green-7" icon="edit" size="sm" class="q-ml-sm" flat dense>
                 <q-tooltip>Edit</q-tooltip>
               </q-btn>
-              <!-- <q-btn color="red" icon="delete" size="sm" class="q-ml-sm" flat dense @click="submitDelete(props.row.id)">
+              <q-btn color="red" icon="delete" size="sm" class="q-ml-sm" flat dense @click="submitDelete(props.row.id)">
                 <q-tooltip>Delete</q-tooltip>
-              </q-btn> -->
+              </q-btn>
             </q-td>
           </template>
         </q-table>
@@ -133,7 +133,6 @@ export default defineComponent({
       console.log(this.database.databaseTypeName && this.database.name && this.database.host && this.database.user && this.database.port && this.database.password);
       return this.database.databaseTypeName && this.database.name && this.database.host && this.database.user && this.database.port && this.database.password;
     },
-    //ok
     getDatabases() {
       if (!this.getToken) return
       Loading.show()
@@ -148,7 +147,6 @@ export default defineComponent({
         console.log(err)
       })
     },
-    //ok
     getValidDatabases() {
       if (!this.getToken) return
       api.get('/valid_database', {
@@ -211,30 +209,31 @@ export default defineComponent({
         })
       })
     },
-    // submitDelete(id) {
-    //   if (!this.getToken) return
-    //   Dialog.create({
-    //     title: 'Delete Database',
-    //     message: 'Do you really want to delete this database?',
-    //     cancel: true
-    //   }).onOk(async () => {
-    //     console.log(id)
-    //     api.delete('./deleteDatabase', { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` }, data: { id_db: id } }).then(response => {
-    //       Notify.create({
-    //         type: 'positive',
-    //         message: response.data.message,
-    //         timeout: 1000
-    //       })
-    //       this.databasesList = this.databasesList.filter(element => element.id !== id)
-    //     }).catch(err => {
-    //       Notify.create({
-    //         type: 'negative',
-    //         message: err.response.data.error,
-    //         timeout: 1000
-    //       })
-    //     })
-    //   })
-    // }
+    submitDelete(databaseId) {
+      if (!this.getToken) return
+      Dialog.create({
+        title: 'Delete Database',
+        message: 'Do you really want to delete this database?',
+        cancel: true
+      }).onOk(async () => {
+        api.delete(`./database/${databaseId}`, {
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` }
+        }).then(response => {
+          Notify.create({
+            type: 'positive',
+            message: response.data.message,
+            timeout: 1000
+          })
+          this.databasesList = this.databasesList.filter(element => element.id !== id)
+        }).catch(err => {
+          Notify.create({
+            type: 'negative',
+            message: err.response.data.error,
+            timeout: 1000
+          })
+        })
+      })
+    }
   },
   data() {
     return {
