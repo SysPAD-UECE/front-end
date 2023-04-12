@@ -94,7 +94,6 @@ export default defineComponent({
         console.log(err.mesage)
       })
     },
-
     getColumnsTable() {
       if (!this.getToken) return
       const data = {

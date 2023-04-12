@@ -198,8 +198,9 @@ export default defineComponent({
           message: res.data.message,
           timeout: 1000
         })
-        this.getDatabasesList()
-        this.$router.push('/client/databasesList')
+        // this.getDatabasesList()
+        // this.$router.push('/client/databases')
+        this.databasesList = this.databasesList.filter(element => element.id !== databaseId)
       }).catch((err) => {
         console.log(err)
         Notify.create({
@@ -224,7 +225,7 @@ export default defineComponent({
             message: response.data.message,
             timeout: 1000
           })
-          this.databasesList = this.databasesList.filter(element => element.id !== id)
+          this.databasesList = this.databasesList.filter(element => element.id !== databaseId)
         }).catch(err => {
           Notify.create({
             type: 'negative',
