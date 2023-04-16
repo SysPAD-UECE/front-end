@@ -24,7 +24,7 @@ The Web application is being built to be a easy way for the final user to use th
 - [x] User Login
 - [ ] Admin Page
 - [x] Database visualizer page
-- [] Anonymization configuration page
+- [ ] Anonymization configuration page
 
 
 
