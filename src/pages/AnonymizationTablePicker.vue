@@ -58,7 +58,7 @@
 import { defineComponent } from "vue";
 import { api } from "src/boot/axios";
 import { mapGetters } from "vuex";
-
+import { Notify, Dialog, Loading } from 'quasar'
 import { ref } from "vue";
 
 export default defineComponent({
@@ -68,6 +68,16 @@ export default defineComponent({
     ...mapGetters("auth", ["getToken"]),
   },
   methods: {
+    checkSelectedDatabase(){
+      if (!this.selectedDatabaseId){
+        Notify.create({
+          type: 'negative',
+          message: "You need to select a database to procced",
+          timeout: 2000
+        })
+        this.$router.push('/client/anonymization/databases')
+      }
+    },
     updateAnonymizationTechnique(column, anonymization) {
       column.anonymizationTechinique = anonymization;
       console.log(this.dBColumnsInfo);
@@ -83,6 +93,7 @@ export default defineComponent({
     getTableList() {
       // console.log("getTableList");
       if (!this.getToken) return;
+      this.checkSelectedDatabase()
       api
         .get(`database/table_names/${this.selectedDatabaseId}`, {
           headers: {
@@ -93,9 +104,12 @@ export default defineComponent({
         .then((response) => {
           this.tableList = response.data.table_names;
           console.log("table list " + this.tableList);
+
         })
         .catch((err) => {
           console.log(err.mesage);
+
+        this.$router.push('/client/anonymization/databases')
         });
     },
     //ok
