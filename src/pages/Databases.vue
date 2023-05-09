@@ -15,7 +15,7 @@
         </div>
       </q-card-section>
       <q-card-section name="quasar-table" class="q-pa-none">
-        <q-table :rows="databasesList" :columns="columns"  separator="cell" row-key="name" class="col">
+        <q-table :rows="databasesList" :columns="columns"  :rows-per-page-options="[0]" separator="cell" row-key="name" class="col">
           <template  name="props-show-password" v-slot:body-cell-password="props">
             <q-td :props="props">
             <div class="absolute-center q-mr-md" >
@@ -45,7 +45,7 @@
                 @click="TestConnection(props.row)">
                 <q-tooltip>Test Connection</q-tooltip>
               </q-btn>
-              <q-btn color="green-7" icon="edit" size="sm" class="q-ml-sm" flat dense>
+              <q-btn color="green-7" icon="edit" size="sm" class="q-ml-sm" flat dense @click="sendEditDatabase(props.row.id, props.row.valid_database, props.row.name, props.row.host, props.row.username, props.row.port, props.row.password)">
                 <q-tooltip>Edit</q-tooltip>
               </q-btn>
               <q-btn color="red" icon="delete" size="sm" class="q-ml-sm" flat dense @click="submitDelete(props.row.id)">
@@ -96,13 +96,61 @@
 
 
           <q-card-actions class="q-pb-md row flex-center text-primary">
-            <q-btn style="width: 150px" :disabled="!isComplete()" color="primary" label="Test Connection"
-              @click="submitTestConnection">
+            <q-btn style="width: 150px" color="primary" label="Test Connection"
+              @click="this.submitTestConnectionByURL()">
             </q-btn>
 
             <q-item>
               <q-btn style="width: 150px" class="q-pb-md row flex-center text-primary" color="primary" label="ADD"
                 type="submit" v-close-popup></q-btn>
+            </q-item>
+          </q-card-actions>
+        </q-form>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="editDatabaseDialog">
+      <q-card>
+        <q-form @submit.prevent="submitEditDatabase">
+          <q-card-section class="row flex-center">
+            <div class="text-h5">Edit Database Record</div>
+          </q-card-section>
+
+          <q-card-section class="row flex-center">
+            <q-select class="col-8" label="Select database type" outlined v-model="databaseEdit.databaseTypeId" :options="validDatabases" stack-label :dense="true" :options-dense="true" option-label="name" option-value="" :rules="[
+                val => !!val || 'Database type is empty'
+              ]" />
+            <q-input class="col-8 " stack-label label="Name" v-model="databaseEdit.name" :rules="[
+              val => !!val || 'Name is empty'
+            ]" />
+            <q-input class="col-8 " stack-label label="Host" v-model="databaseEdit.host" :rules="[
+              val => !!val || 'Host is empty'
+            ]" />
+            <q-input class="col-8" stack-label label="User" v-model="databaseEdit.user" :rules="[
+              val => !!val || 'User is empty'
+            ]" />
+            <q-input class="col-8 " stack-label label="Port" v-model="databaseEdit.port" :rules="[
+              val => !!val || 'Port is empty'
+            ]" />
+            <q-input class="col-8 " stack-label label="Password" :type="isPwd ? 'password' : 'text'"
+              v-model="databaseEdit.password" :rules="[
+                val => !!val || 'Password is empty'
+              ]">
+              <template v-slot:append>
+                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
+              </template>
+            </q-input>
+          </q-card-section>
+
+
+          <q-card-actions class="q-pb-md row flex-center text-primary">
+            <q-btn style="width: 150px" color="primary" label="Test Connection"
+              @click="this.submitTestConnectionByURL()">
+            </q-btn>
+
+            <q-item>
+              <q-btn style="width: 150px" class="q-pb-md row flex-center text-primary" color="primary" label="OK"
+                type="submit" @click="this.submitEditDatabase()" v-close-popup></q-btn>
             </q-item>
           </q-card-actions>
         </q-form>
@@ -159,8 +207,73 @@ export default defineComponent({
         console.log(err)
       })
     },
+    sendEditDatabase(id, valid_database, name, host, username, port, password){
+
+      this.editDatabaseDialog = true
+      this.databaseEdit.id = id
+      this.databaseEdit.databaseTypeId = ref(valid_database)
+      this.databaseEdit.name = ref(name)
+      this.databaseEdit.host = ref(host)
+      this.databaseEdit.user = ref(username)
+      this.databaseEdit.port = ref(port)
+      this.databaseEdit.password = ref(password)
+      console.log(this.databaseEdit)
+
+
+    },
+    submitEditDatabase(){
+      console.log(this.databaseEdit.id)
+      if (!this.getToken) return;
+
+      const data = {
+        "valid_database_id": this.databaseEdit.databaseTypeId.id,
+        "name": this.databaseEdit.name,
+        "host": this.databaseEdit.host,
+        "username": this.databaseEdit.user,
+        "port": parseInt(this.databaseEdit.port),
+        "password": this.databaseEdit.password
+      }
+      console.log("aquiiiii"+ JSON.stringify(data))
+      api
+        .put(`/database/${this.databaseEdit.id}`, data, {
+          headers: {
+            Authorization: `Bearer ${this.getToken}`,
+          },
+        })
+        .then((response) => {console.log("deubom")})
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
+
+
+submitTestConnectionByURL() {
+      if (!this.getToken) return;
+
+      const data = {
+        valid_database_id: this.database.databaseTypeName.id,
+        name: this.database.name,
+        host: this.database.host,
+        username: this.database.user,
+        port:  parseInt(this.database.port),
+        password: this.database.password,
+      };
+      api
+        .post("/database/test_database_connection_by_url", data, {
+          headers: {
+            Authorization: `Bearer ${this.getToken}`,
+          },
+        })
+        .then((response) => {console.log("deubom")})
+        .catch((err) => {
+          console.log(err);
+        });
+    },
     TestConnection(database) {
+      console.log("Teste connection")
       if (!this.getToken) return
+      Loading.show()
       api.post(`./database/test_database_connection/${database.id}`, database, {
         headers: {
           'Content-Type': 'application/json',
@@ -185,22 +298,24 @@ export default defineComponent({
     submitAddDatabase() {
       if (!this.getToken) return
       const data = {
-        valselectedDatabaseId_id: this.database.databaseTypeName.id,
+        valid_database_id: this.database.databaseTypeName.id,
         name: this.database.name,
         host: this.database.host,
         username: this.database.user,
         port: parseInt(this.database.port),
         password: this.database.password
       }
+      console.log(JSON.stringify(data))
       api.post('./database', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
         Notify.create({
           type: 'positive',
           message: res.data.message,
           timeout: 1000
         })
+        this.getDatabases()
         // this.getDatabasesList()
         // this.$router.push('/client/databases')
-        this.databasesList = this.databasesList.filter(element => element.id !== databaseId)
+
       }).catch((err) => {
         console.log(err)
         Notify.create({
@@ -210,6 +325,7 @@ export default defineComponent({
         })
       })
     },
+    //ok
     submitDelete(databaseId) {
       if (!this.getToken) return
       Dialog.create({
@@ -225,7 +341,7 @@ export default defineComponent({
             message: response.data.message,
             timeout: 1000
           })
-          this.databasesList = this.databasesList.filter(element => element.id !== databaseId)
+          this.getDatabases()
         }).catch(err => {
           Notify.create({
             type: 'negative',
@@ -248,9 +364,19 @@ export default defineComponent({
         port: '',
         password: ''
       },
+      databaseEdit: {
+        id: '',
+        databaseTypeId: ref(null),
+        name: '',
+        host: '',
+        user: '',
+        port: '',
+        password: ''
+      },
       isPwd: true,
       validDatabases: [],
       addDatabaseDialog: ref(false),
+      editDatabaseDialog: ref(false),
       columns: [
         {
           label: 'Id',
