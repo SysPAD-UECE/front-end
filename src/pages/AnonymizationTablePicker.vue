@@ -13,7 +13,6 @@
 
     <q-card-section>
       <div class="q-px-md">Select the table you want to anonymize</div>
-
       <q-card-section class="row justify-between">
         <q-select
           class="col q-pr-md"
@@ -38,7 +37,7 @@
         <template v-slot:body-cell-anonymization="props">
           <q-select
             filled
-            v-model="props.row.anonymizationTechinique"
+            v-model="props.row.anonymization"
             :options="anonymizationTechniquesName"
             @input="
               updateAnonymizationTechnique(
@@ -49,7 +48,8 @@
           />
         </template>
       </q-table>
-      <q-btn label="recordAllColumns" @click="recordAllColumns()"></q-btn>
+
+      <q-btn label="Protect Data" color="primary" @click="this.recordAllColumns()"></q-btn>
     </q-card-section>
   </q-card>
 </template>
@@ -58,8 +58,8 @@
 import { defineComponent } from "vue";
 import { api } from "src/boot/axios";
 import { mapGetters } from "vuex";
-import { Notify, Dialog, Loading } from 'quasar'
-import { ref } from "vue";
+import { Notify, Dialog, Loading } from "quasar";
+import { ref, toRaw } from "vue";
 
 export default defineComponent({
   name: "anonymitazation-table-picker",
@@ -68,32 +68,25 @@ export default defineComponent({
     ...mapGetters("auth", ["getToken"]),
   },
   methods: {
-    checkSelectedDatabase(){
-      if (!this.selectedDatabaseId){
+    checkSelectedDatabase() {
+      if (!this.selectedDatabaseId) {
         Notify.create({
-          type: 'negative',
+          type: "negative",
           message: "You need to select a database to procced",
-          timeout: 2000
-        })
-        this.$router.push('/client/anonymization/databases')
+          timeout: 2000,
+        });
+        this.$router.push("/client/anonymization/databases");
       }
     },
     updateAnonymizationTechnique(column, anonymization) {
-      column.anonymizationTechinique = anonymization;
+      column.anonymization = anonymization;
       console.log(this.dBColumnsInfo);
     },
-    // imprimirDadosAtualizados() {
-    //   this.dBColumnsInfo.forEach((cliente) => {
-    //     console.log(
-    //       `Nome: ${cliente.sensitive_column_names} - Sorvete escolhido: ${cliente.anonymizationTechinique}`
-    //     );
-    //   });
-    // },
     //ok
     getTableList() {
-      // console.log("getTableList");
       if (!this.getToken) return;
-      this.checkSelectedDatabase()
+      Loading.show();
+      this.checkSelectedDatabase();
       api
         .get(`database/table_names/${this.selectedDatabaseId}`, {
           headers: {
@@ -104,17 +97,14 @@ export default defineComponent({
         .then((response) => {
           this.tableList = response.data.table_names;
           console.log("table list " + this.tableList);
-
+          Loading.hide();
         })
         .catch((err) => {
           console.log(err.mesage);
-
-        this.$router.push('/client/anonymization/databases')
         });
     },
     //ok
     getAnonymizationList() {
-      // console.log("anonymizationList")
       if (!this.getToken) return;
       api
         .get("./anonymization_type", {
@@ -125,6 +115,7 @@ export default defineComponent({
         })
         .then((response) => {
           this.anonymizationTechniques = response.data;
+          console.log(this.anonymizationTechniques);
           const resp = response.data.items;
           this.anonymizationTechniquesName = resp.map((resp) => resp.name);
         })
@@ -135,12 +126,10 @@ export default defineComponent({
 
     getTableColumnsInfo() {
       if (!this.getToken) return;
-      // console.log(
-      //   "GET COLUMNS TABLE " + this.selectedDatabaseId + ", " + this.tableSelect
-      // );
+      Loading.show();
       api
         .get(
-          `database/sensitive_columns/${this.selectedDatabaseId}?table_name=${this.tableSelect}`,
+          `database/table_columns/${this.selectedDatabaseId}?table_name=${this.tableSelect}`,
           {
             headers: {
               "Content-Type": "application/json",
@@ -149,48 +138,51 @@ export default defineComponent({
           }
         )
         .then((response) => {
-          console.log(JSON.stringify(response.data));
-          const resp = response.data;
-          //vou precisar mudar isso
-          this.dBColumnsInfo = resp.sensitive_column_names.map((column) => {
-            return {
-              sensitive_column_names: column,
-              anonymizationTechinique: null,
-            };
-          });
-          //isso mudar só pra add names
-          this.columnNamesList = response.data.sensitive_column_names;
+          console.log("Get Columns: " + JSON.stringify(response.data));
+          this.dBColumnsInfo = response.data.table_columns;
+          this.dBColumnsInfo.forEach((dic) => (dic["anonymization"] = null));
           console.log(JSON.stringify(this.dBColumnsInfo));
+          Loading.hide();
+          this.columnNamesList = this.dBColumnsInfo.map((dic) => dic.name);
+          console.log(this.columnNamesList);
         })
         .catch((err) => {
           console.log(err.mesage);
         });
     },
+
     async recordAllColumns() {
       try {
+        Loading.show()
         console.log("TESTE");
         let promises = [];
         for (var i = 1; i <= this.anonymizationTechniquesName.length; i++) {
-          console.log(this.anonymizationTechniques);
+          console.log(
+            "anonymization techniques" +
+              JSON.stringify(this.anonymizationTechniques)
+          );
           const item = this.anonymizationTechniques.items.find(
             (item) => item.id === i
           );
-          console.log(item);
+          console.log("item: " + item.name);
 
-          const techniques = this.columnNamesList.filter(
-            (col) => col.anonymizationTechinique === item.name
-          );
+          console.log(this.dBColumnsInfo);
 
-          const columnsToRecord = techniques.map(
-            (obj) => obj.sensitive_column_names
-          );
+          var columnsToRecord = this.dBColumnsInfo
+            .filter((d) => d.anonymization === item.name)
+            .map((d) => d.name);
+
+
+          // const columnsToRecord = techniques.map(
+          //   (obj) => obj.sensitive_column_names
+          // );
+
           console.log(
             "anonymizacao: " + item.name + " colunas: " + columnsToRecord
           );
           promises.push(this.recordColumn(columnsToRecord, i));
-          // await this.recordColumn(columnsToRecord, i);
         }
-        // await Promise.allSettled(promises)
+
         const results = await Promise.allSettled(promises);
 
         results.forEach((result) => {
@@ -203,27 +195,34 @@ export default defineComponent({
           }
         });
 
-        // const encryptResponse = await this.encryptRecordedData();
-        // const encryptError =
-        //   encryptResponse.status !== 200 || encryptResponse.data.error
-        //     ? "Erro ao encriptar dados!"
-        //     : null;
+        const encryptResponse = await this.encryptRecordedData();
+        console.log("response"+ JSON.stringify(encryptResponse))
+        const encryptError =
+          encryptResponse.status !== 200
+            ? encryptResponse.data
+            : null;
 
-        // if (encryptError) {
-        //   throw new Error(`${encryptError}`);
-        // }
+        if (encryptError) {
+          throw new Error(`${encryptError}`);
+        }
 
-        // const anonymizeResponse = await this.anonymizeRecordedData();
-        // const anonymizeError =
-        //   anonymizeResponse.status !== 200 || anonymizeResponse.data.error
-        //     ? "Erro ao anonimizar dados!"
-        //     : null;
+        const anonymizeResponse = await this.anonymizeRecordedData();
+        console.log("responde" + JSON.stringify(anonymizeResponse))
+        const anonymizeError =
+          anonymizeResponse.status !== 200
+            ? anonymizeResponse.data
+            : null;
 
-        // if (anonymizeError) {
-        //   throw new Error(`${anonymizeError}`);
-        // }
-
-        // console.log("Dados protegidos com sucesso!");
+        if (anonymizeError) {
+          throw new Error(`${anonymizeError}`);
+        }
+        Loading.hide()
+        Notify.create({
+          type: "positive",
+          message: "Your data is protected",
+          timeout: 2000,
+        });
+        console.log("Dados protegidos com sucesso!");
       } catch (error) {
         console.error("Erro: ", error);
       }
@@ -255,11 +254,12 @@ export default defineComponent({
     },
     async encryptRecordedData() {
       console.log("Encryptation method");
+      const data = {table_name: this.tableSelect}
       return new Promise((resolve, reject) => {
         api
           .post(
             `/encryption/database/${this.selectedDatabaseId}`,
-            this.tableSelect,
+            data,
             {
               headers: {
                 "Content-Type": "application/json",
@@ -277,11 +277,12 @@ export default defineComponent({
     },
     async anonymizeRecordedData() {
       console.log("Anonymization method");
+      const data = {table_name: this.tableSelect}
       return new Promise((resolve, reject) => {
         api
           .post(
             `/anonymization/database/${this.selectedDatabaseId}`,
-            this.tableSelect,
+            data,
             {
               headers: {
                 "Content-Type": "application/json",
@@ -302,16 +303,16 @@ export default defineComponent({
     const columns = [
       {
         label: "Column",
-        field: "sensitive_column_names",
-        name: "sensitive_column_names",
+        field: "name",
+        name: "name",
         align: "left",
       },
-      // {
-      //   label: "Data Type",
-      //   field: "column_types",
-      //   name: "column_types",
-      //   align: "left",
-      // },
+      {
+        label: "Data Type",
+        field: "type",
+        name: "type",
+        align: "left",
+      },
       {
         label: "Select Anonymization",
         field: "anonymization",
