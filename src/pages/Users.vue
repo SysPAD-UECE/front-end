@@ -7,8 +7,8 @@
       <q-card-section>
         <div class="text-h6 text-grey-8">
           Users
-          <div class="float-right q-pt-sm"> <q-btn label="Add" class="text-capitalize shadow-3" color="primary" icon="person_add"
-            to='/admin/user/new' /></div>
+          <div class="float-right q-pt-sm"> <q-btn label="Add" class="text-capitalize shadow-3" color="primary"
+              icon="person_add" to='/admin/user/new' /></div>
 
         </div>
         <div>Remove or edit registered users</div>
@@ -19,7 +19,7 @@
             <q-td :props="props">
               <q-item style="max-width: 420px">
                 <q-item-section>
-                  <q-item-label>{{ props.row.name }}</q-item-label>
+                  <q-item-label>{{ props.row.username }}</q-item-label>
                 </q-item-section>
               </q-item>
             </q-td>
@@ -27,8 +27,7 @@
           <template v-slot:body-cell-action="props">
             <q-td :props="props">
               <q-btn color="green-7" icon="edit" size="sm" flat dense />
-              <q-btn color="red" icon="delete" size="sm" class="q-ml-sm" flat dense
-                @click="submitDelete(props.row.email)" />
+              <q-btn color="red" icon="delete" size="sm" class="q-ml-sm" flat dense @click="submitDelete(props.row.id)" />
             </q-td>
           </template>
           <!--<template v-slot:top-right>
@@ -49,7 +48,6 @@ import { Notify, Dialog, Loading } from 'quasar'
 import { api } from 'src/boot/axios'
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
-
 export default defineComponent({
   name: 'Users',
   computed: {
@@ -60,12 +58,12 @@ export default defineComponent({
     getUsers() {
       if (!this.getToken) return
       Loading.show()
-      api.get('/getUsers', {
+      api.get('/user', {
         headers: {
           Authorization: `Bearer ${this.getToken}`
         }
       }).then(response => {
-        this.users = response.data
+        this.users = response.data.items
         this.users.forEach((value, index) => {
           value.is_admin = value.is_admin == 1 ? "Yes" : "No"
         })
@@ -74,24 +72,24 @@ export default defineComponent({
         console.log(err)
       })
     },
-    submitDelete(email) {
+    submitDelete(id) {
       if (!this.getToken) return
       Dialog.create({
         title: 'Delete User',
         message: 'Do you really want to delete this user?',
         cancel: true
       }).onOk(async () => {
-        api.post('/deleteUser', { email: email }, {
-          headers: {
-            Authorization: `Bearer ${this.getToken}`
-          }
+        api.delete(`./user/${id}`, {
+
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` }
+
         }).then(response => {
           Notify.create({
             type: 'positive',
             message: response.data.message,
             timeout: 1000
           })
-          this.users = this.users.filter(element => element.email !== email)
+          this.users = this.users.filter(element => element.id !== id)
         }).catch(err => {
           Notify.create({
             type: 'negative',
@@ -104,6 +102,7 @@ export default defineComponent({
   },
   data() {
     return {
+
       columns: [
         {
           name: 'id',
