@@ -13,7 +13,7 @@ const routes = [
     component: () => import('layouts/ClientLayout.vue'),
     children: [
       { path: '', component: () => import('pages/Home.vue') },
-      { path: 'home', component: () => import('pages/Home.vue') },
+      { path: 'home', name: 'home', component: () => import('pages/Home.vue') },
       { path: 'databases', component: () => import('pages/Databases.vue') },
       { path: 'anonymization',
       children: [
@@ -22,6 +22,9 @@ const routes = [
       ],
       redirect: './client/anonymization/databases'},
     ],
+    meta: {
+      requiresAuth: true
+    },
     redirect: './client/databases'
   },
 
@@ -37,7 +40,10 @@ const routes = [
           { path: 'new', component: () => import('pages/addUser.vue') }
         ]
       }
-    ]
+    ],
+    meta: {
+      requiresAuth: true
+    }
   },
   // {
   //   path: '/anonymization',
