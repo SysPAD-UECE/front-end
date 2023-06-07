@@ -16,7 +16,7 @@
       <q-card-section class="row justify-between">
         <q-select
           class="col q-pr-md"
-          filled
+          outlined
           v-model="tableSelect"
           :options="tableList"
           :dense="true"
@@ -33,10 +33,9 @@
     </q-card-section>
 
     <q-card-section class="columns-table">
-      <q-table :rows="dBColumnsInfo" :columns="columns" row-key="column">
+      <q-table class="custom-table" :rows="dBColumnsInfo" :columns="columns" row-key="column">
         <template v-slot:body-cell-anonymization="props">
           <q-select
-            filled
             v-model="props.row.anonymization"
             :options="anonymizationTechniquesName"
             @input="
@@ -58,8 +57,8 @@
 import { defineComponent } from "vue";
 import { api } from "src/boot/axios";
 import { mapGetters } from "vuex";
-import { Notify, Dialog, Loading } from "quasar";
-import { ref, toRaw } from "vue";
+import { Notify, Loading } from "quasar";
+import { ref } from "vue";
 
 export default defineComponent({
   name: "anonymitazation-table-picker",
@@ -82,7 +81,6 @@ export default defineComponent({
       column.anonymization = anonymization;
       console.log(this.dBColumnsInfo);
     },
-    //ok
     getTableList() {
       if (!this.getToken) return;
       Loading.show();
@@ -96,14 +94,17 @@ export default defineComponent({
         })
         .then((response) => {
           this.tableList = response.data.table_names;
-          console.log("table list " + this.tableList);
           Loading.hide();
         })
         .catch((err) => {
-          console.log(err.mesage);
+          Loading.hide();
+          Notify.create({
+          type: 'negative',
+          message: 'Error retrieving table list',
+          timeout: 1000
+        })
         });
     },
-    //ok
     getAnonymizationList() {
       if (!this.getToken) return;
       api
@@ -115,15 +116,17 @@ export default defineComponent({
         })
         .then((response) => {
           this.anonymizationTechniques = response.data;
-          console.log(this.anonymizationTechniques);
           const resp = response.data.items;
           this.anonymizationTechniquesName = resp.map((resp) => resp.name);
         })
         .catch((err) => {
-          console.log(err.mesage);
+          Notify.create({
+          type: 'negative',
+          message: 'Error retrieving anonymization data',
+          timeout: 1000
+        })
         });
     },
-
     getTableColumnsInfo() {
       if (!this.getToken) return;
       Loading.show();
@@ -138,76 +141,54 @@ export default defineComponent({
           }
         )
         .then((response) => {
-          console.log("Get Columns: " + JSON.stringify(response.data));
+          Loading.hide();
           this.dBColumnsInfo = response.data.table_columns;
           this.dBColumnsInfo.forEach((dic) => (dic["anonymization"] = null));
-          console.log(JSON.stringify(this.dBColumnsInfo));
-          Loading.hide();
           this.columnNamesList = this.dBColumnsInfo.map((dic) => dic.name);
-          console.log(this.columnNamesList);
         })
         .catch((err) => {
-          console.log(err.mesage);
+          Loading.hide()
+          Notify.create({
+          type: 'negative',
+          message: 'Error retrieving columns data',
+          timeout: 1000
+        })
         });
     },
-
     async recordAllColumns() {
       try {
-        Loading.show()
-        console.log("TESTE");
+
         let promises = [];
         for (var i = 1; i <= this.anonymizationTechniquesName.length; i++) {
-          console.log(
-            "anonymization techniques" +
-              JSON.stringify(this.anonymizationTechniques)
-          );
           const item = this.anonymizationTechniques.items.find(
             (item) => item.id === i
           );
-          console.log("item: " + item.name);
-
-          console.log(this.dBColumnsInfo);
-
           var columnsToRecord = this.dBColumnsInfo
             .filter((d) => d.anonymization === item.name)
             .map((d) => d.name);
-
-
-          // const columnsToRecord = techniques.map(
-          //   (obj) => obj.sensitive_column_names
-          // );
-
-          console.log(
-            "anonymizacao: " + item.name + " colunas: " + columnsToRecord
-          );
           promises.push(this.recordColumn(columnsToRecord, i));
         }
 
         const results = await Promise.allSettled(promises);
 
         results.forEach((result) => {
-          if (result.status === "fulfilled") {
-            console.log("Resultado da função assíncrona: ", result.value);
-          } else {
+          if (result.status != "fulfilled") {
             throw new Error(
-              "Erro na execução da função assíncrona: " + result.reason
+              "Async function error:  " + result.reason
             );
           }
         });
 
         const encryptResponse = await this.encryptRecordedData();
-        console.log("response"+ JSON.stringify(encryptResponse))
         const encryptError =
           encryptResponse.status !== 200
             ? encryptResponse.data
             : null;
-
         if (encryptError) {
           throw new Error(`${encryptError}`);
         }
 
         const anonymizeResponse = await this.anonymizeRecordedData();
-        console.log("responde" + JSON.stringify(anonymizeResponse))
         const anonymizeError =
           anonymizeResponse.status !== 200
             ? anonymizeResponse.data
@@ -216,26 +197,30 @@ export default defineComponent({
         if (anonymizeError) {
           throw new Error(`${anonymizeError}`);
         }
-        Loading.hide()
+
         Notify.create({
           type: "positive",
           message: "Your data is protected",
           timeout: 2000,
         });
-        console.log("Dados protegidos com sucesso!");
+
       } catch (error) {
-        console.error("Erro: ", error);
+        Notify.create({
+          type: 'negative',
+          message: 'Error protecting data',
+          timeout: 1500
+        })
       }
     },
     async recordColumn(columns, id) {
-      console.log("ADD ANONYMIZATION RECORD " + columns + "  " + id);
+
       const data = {
         database_id: parseInt(this.selectedDatabaseId),
         anonymization_type_id: id,
         table_name: this.tableSelect,
         columns: columns,
       };
-      console.log(data);
+
       return new Promise((resolve, reject) => {
         api
           .post("/anonymization_record", data, {
@@ -253,7 +238,7 @@ export default defineComponent({
       });
     },
     async encryptRecordedData() {
-      console.log("Encryptation method");
+
       const data = {table_name: this.tableSelect}
       return new Promise((resolve, reject) => {
         api
@@ -276,7 +261,7 @@ export default defineComponent({
       });
     },
     async anonymizeRecordedData() {
-      console.log("Anonymization method");
+
       const data = {table_name: this.tableSelect}
       return new Promise((resolve, reject) => {
         api
