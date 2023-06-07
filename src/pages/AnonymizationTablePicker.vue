@@ -47,8 +47,9 @@
           />
         </template>
       </q-table>
-
-      <q-btn label="Protect Data" color="primary" @click="this.recordAllColumns()"></q-btn>
+      <div class="q-mt-md row">
+      <q-btn  label="Protect Data" color="primary" @click="this.recordAllColumns()"></q-btn>
+    </div>
     </q-card-section>
   </q-card>
 </template>
@@ -75,6 +76,9 @@ export default defineComponent({
           timeout: 2000,
         });
         this.$router.push("/client/anonymization/databases");
+      } else {
+        this.getTableList();
+        this.getAnonymizationList();
       }
     },
     updateAnonymizationTechnique(column, anonymization) {
@@ -84,7 +88,7 @@ export default defineComponent({
     getTableList() {
       if (!this.getToken) return;
       Loading.show();
-      this.checkSelectedDatabase();
+
       api
         .get(`database/table_names/${this.selectedDatabaseId}`, {
           headers: {
@@ -317,8 +321,8 @@ export default defineComponent({
   },
   created() {
     this.selectedDatabaseId = this.$route.params.data;
-    this.getTableList();
-    this.getAnonymizationList();
+    this.checkSelectedDatabase();
+
   },
 });
 </script>
