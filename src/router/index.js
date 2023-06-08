@@ -30,6 +30,8 @@ export default route(function ( { store, ssrContext } ) {
 
     if (!isLoggedIn && to.meta.requiresAuth) {
       return { name: 'login' }
+    } else if (isLoggedIn && (to.name === 'login' || to.name === 'start-page')) {
+      return { name: 'home' }
     }
   })
 
