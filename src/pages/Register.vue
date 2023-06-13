@@ -19,16 +19,15 @@
         <q-card-section>
           <q-form class="q-gutter-md" @submit.prevent="submitRegister">
             <q-input label="User" v-model="register.username" :rules="[
-              val => !!val || 'Name is empty'
-            ]">
+                val => !!val || 'Name is empty'
+              ]">
             </q-input>
             <q-input label="Email" v-model="register.email" :rules="[
-              val => !!val || 'Email is empty'
-            ]">
+                val => !!val || 'Email is empty'
+              ]">
             </q-input>
-            <q-input label="Password" :type="isPwd ? 'password' : 'text'" v-model="register.password" :rules="[
-              val => !!val || 'Password is empty'
-            ]">
+            <q-input label="Password" :type="isPwd ? 'password' : 'text'" v-model="register.password"
+              :rules="[val => (val && val.length >= 6) || 'Password is required and 6 characters']">
               <template v-slot:append>
                 <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
               </template>
@@ -72,7 +71,6 @@ export default defineComponent({
         password: this.register.password
       }
       api.post('./user', data, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
-        console.log(res.data)
         Notify.create({
           type: 'positive',
           message: res.data.message,

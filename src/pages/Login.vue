@@ -1,5 +1,4 @@
 <template>
-
   <img src="~assets/blue-wave.svg" class="wave" alt="login-wave">
   <div class="row" style="height: 90vh">
     <div class="col-0 col-md-6 flex justify-center content-center">
@@ -21,15 +20,14 @@
         <q-card-section>
           <q-form class="q-gutter-md" @submit.prevent="submitLogin">
             <q-input label="Email" v-model="login.email" :rules="[
-              val => !!val || 'Email is empty'
-            ]">
+                val => !!val || 'Email is empty'
+              ]">
             </q-input>
             <q-input label="Senha" :type="isPwd ? 'password' : 'text'" v-model="login.password" :rules="[
-              val => !!val || 'Password is empty'
-            ]">
+                val => !!val || 'Password is empty'
+              ]">
               <template v-slot:append>
-                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                  @click="isPwd = !isPwd" />
+                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
               </template>
             </q-input>
             <div>
@@ -78,14 +76,14 @@ export default defineComponent({
         this.$router.push(toPath)
         Notify.create({
           type: 'positive',
-          message: this.apiData.response.data.message,
+          message: "user logged",
           timeout: 1000
         })
       } catch (err) {
         console.log(err)
         Notify.create({
           type: 'negative',
-          message: this.apiData.response.data.error,
+          message: "error",
           timeout: 1000
         })
       }

@@ -20,19 +20,17 @@
         <q-card-section>
           <q-form class="q-gutter-md" @submit.prevent="submitRegister">
             <q-input label="User" v-model="register.username" :rules="[
-              val => !!val || 'Name is empty'
-            ]">
+                val => !!val || 'Name is empty'
+              ]">
             </q-input>
             <q-input label="Email" v-model="register.email" :rules="[
-              val => !!val || 'Email is empty'
-            ]">
+                val => !!val || 'Email is empty'
+              ]">
             </q-input>
-            <q-input label="Password" :type="isPwd ? 'password' : 'text'" v-model="register.password" :rules="[
-              val => !!val || 'Password is empty'
-            ]">
+            <q-input label="Password" :type="isPwd ? 'password' : 'text'" v-model="register.password"
+              :rules="[val => (val && val.length >= 6) || 'Password is required and 6 characters']">
               <template v-slot:append>
-                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                  @click="isPwd = !isPwd" />
+                <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
               </template>
             </q-input>
             <div>
@@ -51,7 +49,7 @@ import { api } from 'src/boot/axios'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-  name: 'addUser',
+  name: 'Register',
 
   data() {
     return {
@@ -66,23 +64,23 @@ export default defineComponent({
   methods: {
     submitRegister() {
       const data = {
-        name: this.register.username,
+        username: this.register.username,
         email: this.register.email,
         password: this.register.password
       }
-      api.post('./register', data, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
-        console.log(res.data)
+      api.post('./user', data, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
         Notify.create({
           type: 'positive',
           message: res.data.message,
+          message: 'user created',
           timeout: 1000
         })
-        this.$router.push('/admin/users')
       }).catch((err) => {
-        console.log(err)
+        //console.log(err)
         Notify.create({
           type: 'negative',
           message: err.response.data.error,
+          message: 'erro',
           timeout: 1000
         })
       })
