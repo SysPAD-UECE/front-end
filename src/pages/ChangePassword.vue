@@ -28,7 +28,7 @@
                   @click="isPwd = !isPwd" />
               </template>
             </q-input>
-            <q-input label="Repaet New Password" :type="isPwd ? 'password' : 'text'" v-model="password.newPassowrdRepeat" :rules="[
+            <q-input label="Repeat New Password" :type="isPwd ? 'password' : 'text'" v-model="password.newPassowrdRepeat" :rules="[
               val => !!val || 'Password is empty'
             ]">
               <template v-slot:append>
