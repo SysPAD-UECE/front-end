@@ -23,8 +23,9 @@
         <q-table hide-header hide-bottom :rows-per-page-options="[this.columnsList.length]" row-key="columnsList"
           :rows="slicedRows" :columns="columns">
           <template v-slot:body-cell-anonymization="props">
-            <q-select filled v-model="anonymizationTechniquesSelect[props.row.index]" :options="anonymizationTechniquesList"
-              label="Select anonymization techniques" color="teal" clearable options-selected-class="text-deep-orange">
+            <q-select filled v-model="anonymizationTechniquesSelect[props.row.index]"
+              :options="anonymizationTechniquesList" label="Select anonymization techniques" color="teal" clearable
+              options-selected-class="text-deep-orange">
             </q-select>
           </template>
         </q-table>
@@ -36,7 +37,8 @@
             @click="setColumnsAnonymization()" />
         </div>
         <div class="q-mt-md row">
-          <q-btn v-if="(this.columnsCounter === 6)" color="grey col grow" label="ANONYMIZATION" @click="sendDataForEncryption()" />
+          <q-btn v-if="(this.columnsCounter === 6)" color="grey col grow" label="ANONYMIZATION"
+            @click="sendDataForEncryption()" />
 
         </div>
       </q-card-section>
@@ -89,7 +91,6 @@ export default defineComponent({
         }
       }).then(response => {
         this.tableList = response.data.table_names
-        console.log(this.tableList)
       }).catch(err => {
         console.log(err.mesage)
       })
@@ -239,7 +240,6 @@ export default defineComponent({
         'table': this.tableSelect
       }
 
-      console.log(data)
       if (!this.getToken) return
 
       api.post('/sendDataForEncryptionbase', data, {

@@ -69,7 +69,6 @@ export default defineComponent({
         password: this.register.password
       }
       api.post('./user', data, { headers: { 'Content-Type': 'application/json' } }).then((res) => {
-        console.log(res.data)
         Notify.create({
           type: 'positive',
           message: res.data.message,

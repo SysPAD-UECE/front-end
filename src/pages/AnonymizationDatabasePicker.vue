@@ -73,7 +73,6 @@ export default defineComponent({
       }).then(response => {
         this.databases = response.data.items
         Loading.hide()
-        console.log(this.databases)
       }).catch(err => {
         console.log(err)
       })

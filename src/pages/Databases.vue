@@ -15,16 +15,16 @@
         </div>
       </q-card-section>
       <q-card-section name="quasar-table" class="q-pa-none">
-        <q-table :rows="databasesList" :columns="columns"  separator="cell" row-key="name" class="col">
-          <template  name="props-show-password" v-slot:body-cell-password="props">
+        <q-table :rows="databasesList" :columns="columns" separator="cell" row-key="name" class="col">
+          <template name="props-show-password" v-slot:body-cell-password="props">
             <q-td :props="props">
-            <div class="absolute-center q-mr-md" >
-              {{ props.row.showPassword ? (props.row.password ? props.row.password : 'EMPTY') : '*******' }}
-              <q-btn color="grey" size="sm" class="q-ml-sm" flat dense v-if="props.row.password !== null"
-                v-bind:icon="props.row.showPassword ? 'visibility_off' : 'visibility'"
-                @click="toggleShowPassword(props.row)" />
-              <q-tooltip>Show Password</q-tooltip>
-            </div>
+              <div class="absolute-center q-mr-md">
+                {{ props.row.showPassword ? (props.row.password ? props.row.password : 'EMPTY') : '*******' }}
+                <q-btn color="grey" size="sm" class="q-ml-sm" flat dense v-if="props.row.password !== null"
+                  v-bind:icon="props.row.showPassword ? 'visibility_off' : 'visibility'"
+                  @click="toggleShowPassword(props.row)" />
+                <q-tooltip>Show Password</q-tooltip>
+              </div>
             </q-td>
           </template>
 
@@ -69,25 +69,27 @@
           </q-card-section>
 
           <q-card-section class="row flex-center">
-            <q-select class="col-8" label="Select database type" outlined v-model="database.databaseTypeName" :options="validDatabases" stack-label :dense="true" :options-dense="true" option-label="name" option-value="" :rules="[
-                val => !!val || 'Database type is empty'
-              ]" />
+            <q-select class="col-8" label="Select database type" outlined v-model="database.databaseTypeName"
+              :options="validDatabases" stack-label :dense="true" :options-dense="true" option-label="name"
+              option-value="" :rules="[
+                  val => !!val || 'Database type is empty'
+                ]" />
             <q-input class="col-8 " stack-label label="Name" v-model="database.name" :rules="[
-              val => !!val || 'Name is empty'
-            ]" />
+                val => !!val || 'Name is empty'
+              ]" />
             <q-input class="col-8 " stack-label label="Host" v-model="database.host" :rules="[
-              val => !!val || 'Host is empty'
-            ]" />
+                val => !!val || 'Host is empty'
+              ]" />
             <q-input class="col-8" stack-label label="User" v-model="database.user" :rules="[
-              val => !!val || 'User is empty'
-            ]" />
+                val => !!val || 'User is empty'
+              ]" />
             <q-input class="col-8 " stack-label label="Port" v-model="database.port" :rules="[
-              val => !!val || 'Port is empty'
-            ]" />
+                val => !!val || 'Port is empty'
+              ]" />
             <q-input class="col-8 " stack-label label="Password" :type="isPwd ? 'password' : 'text'"
               v-model="database.password" :rules="[
-                val => !!val || 'Password is empty'
-              ]">
+                  val => !!val || 'Password is empty'
+                ]">
               <template v-slot:append>
                 <q-icon :name="isPwd ? 'visibility_off' : 'visibility'" class="cursor-pointer" @click="isPwd = !isPwd" />
               </template>
@@ -167,7 +169,6 @@ export default defineComponent({
           Authorization: `Bearer ${this.getToken}`
         }
       }).then((res) => {
-        console.log(res)
         Notify.create({
           type: 'positive',
           message: res.data.message,
