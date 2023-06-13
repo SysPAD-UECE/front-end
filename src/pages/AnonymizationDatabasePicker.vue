@@ -14,7 +14,17 @@
     <q-card-section class="q-pa-none">
       <q-table :rows="databases" :columns="columns" separator="cell" row-key="id" class="col" selection="single"
         v-model:selected="selected">
-
+        <template  name="props-show-password" v-slot:body-cell-password="props">
+            <q-td :props="props">
+            <div class="absolute-center q-mr-md" >
+              {{ props.row.showPassword ? (props.row.password ? props.row.password : 'EMPTY') : '*******' }}
+              <q-btn color="grey" size="sm" class="q-ml-sm" flat dense v-if="props.row.password !== null"
+                v-bind:icon="props.row.showPassword ? 'visibility_off' : 'visibility'"
+                @click="toggleShowPassword(props.row)" />
+              <q-tooltip>Show Password</q-tooltip>
+            </div>
+            </q-td>
+          </template>
 
       </q-table>
 
@@ -39,30 +49,16 @@ export default defineComponent({
   },
 
   methods: {
+    toggleShowPassword(row) {
+      row.showPassword = !row.showPassword
+    },
     isSelected() {
       return this.selected.length != 0
     },
     shareData(selected_id) {
       this.$router.push({ name: "anonymitazation-table-picker", params: { data: selected_id } })
     },
-    isComplete() {
-      console.log(this.database.id_db_type && this.database.name && this.database.host && this.database.user && this.database.port && this.database.password);
-      return this.database.id_db_type && this.database.name && this.database.host && this.database.user && this.database.port && this.database.password;
-    },
-    getValidDatabases() {
-      if (!this.getToken) return
-      Loading.show()
-      api.get('/valselectedDatabaseId', {
-        headers: {
-          Authorization: `Bearer ${this.getToken}`
-        }
-      }).then(response => {
-        this.validdatabases = response.data
-        Loading.hide()
-      }).catch(err => {
-        console.log(err)
-      })
-    },
+
     getDatabases() {
       if (!this.getToken) return
       Loading.show()
@@ -77,85 +73,6 @@ export default defineComponent({
         console.log(err)
       })
     },
-    submitTestConnection(database) {
-      if (!this.getToken) return
-      const data = {
-        type: database.name_db_type,
-        name: database.name,
-        host: database.host,
-        user: database.user,
-        port: database.port,
-        password: database.password
-      }
-      api.post('./test_connection', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
-        Notify.create({
-          type: 'positive',
-          message: res.data.message,
-          timeout: 1000
-        })
-      }).catch((err) => {
-        console.log(err)
-        Notify.create({
-          type: 'negative',
-          message: err.response.data.error,
-          timeout: 1000
-        })
-      })
-    },
-    submitAddDatabase() {
-      if (!this.getToken) return
-      const data = {
-        id_db_type: this.database.id_db_type.id,
-        name: this.database.name,
-        host: this.database.host,
-        user: this.database.user,
-        port: this.database.port,
-        password: this.database.password
-      }
-      api.post('./addDatabase', data, { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${this.getToken}` } }).then((res) => {
-        Notify.create({
-          type: 'positive',
-          message: res.data.message,
-          timeout: 1000
-        })
-        this.getDatabases()
-        this.$router.push('/client/databases')
-      }).catch((err) => {
-        console.log(err)
-        Notify.create({
-          type: 'negative',
-          message: err.response.data.error,
-          timeout: 1000
-        })
-      })
-    },
-    submitDelete(id) {
-      if (!this.getToken) return
-      Dialog.create({
-        title: 'Delete Database',
-        message: 'Do you really want to delete this database?',
-        cancel: true
-      }).onOk(async () => {
-        api.post('/deleteDatabase', { id: id }, {
-          headers: {
-            Authorization: `Bearer ${this.getToken}`
-          }
-        }).then(response => {
-          Notify.create({
-            type: 'positive',
-            message: response.data.message,
-            timeout: 1000
-          })
-          this.databases = this.databases.filter(element => element.id !== id)
-        }).catch(err => {
-          Notify.create({
-            type: 'negative',
-            message: err.response.data.error,
-            timeout: 1000
-          })
-        })
-      })
-    }
   },
   data() {
     const selected = ref([])
@@ -169,59 +86,44 @@ export default defineComponent({
         port: '',
         password: ''
       },
-      isPwd: true,
-      validdatabases: [],
-      addDialog: ref(false),
       columns: [
         {
-          name: 'id',
-          label: 'ID',
-          field: row => row.id,
-          format: val => `${val}`,
+          label: 'Id',
+          field: 'id',
           align: 'left',
-          sortable: true
         },
         {
-          name: 'type',
+          name: 'valid_database.name',
           label: 'Type',
-          field: 'name_db_type',
+          field: row => `${row.valid_database.name}`,
           align: 'left',
-          sortable: true
         },
         {
-          name: 'name',
           label: 'Name',
           field: 'name',
-          align: 'left',
-          sortable: true
+          align: 'left'
         },
         {
-          name: 'host',
           label: 'Host',
           field: 'host',
           align: 'left',
-          sortable: true
         },
         {
-          name: 'username',
           label: 'User',
           field: 'username',
-          align: 'left',
-          sortable: true
+          align: 'left'
         },
         {
-          name: 'port',
           label: 'Port',
           field: 'port',
-          align: 'left',
-          sortable: true
+          align: 'left'
         },
         {
           name: 'password',
           label: 'Password',
           field: 'password',
-          align: 'left',
-          sortable: true
+          align: 'center',
+          format: (value, row) => value
         }
       ],
       databases: []
@@ -229,7 +131,6 @@ export default defineComponent({
   },
   mounted() {
     this.getDatabases()
-    this.getValidDatabases()
   }
 })
 </script>

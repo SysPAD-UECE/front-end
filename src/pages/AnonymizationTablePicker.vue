@@ -1,358 +1,328 @@
 <template>
-  <q-page padding>
-    <q-card>
-      <div class="q-pa-md q-gutter-sm">
-        <q-breadcrumbs>
-          <q-breadcrumbs-el icon="home" to="/client/home" />
-          <q-breadcrumbs-el label="Anonymization" icon="hotel_class" to="/client/anonymization" />
-        </q-breadcrumbs>
-      </div>
+  <q-card>
+    <q-card-section class="q-pa-md q-gutter-sm">
+      <q-breadcrumbs>
+        <q-breadcrumbs-el icon="home" to="/client/home" />
+        <q-breadcrumbs-el
+          label="Anonymization"
+          icon="hotel_class"
+          to="/client/anonymization"
+        />
+      </q-breadcrumbs>
+    </q-card-section>
 
-      <q-form name="select-table">
-        <div class="q-px-md">Select the table you want to anonymize</div>
-        <q-card-section class="row justify-between">
-          <q-select class="col q-pr-md" filled v-model="tableSelect" :options="tableList" :dense="true"
-            :options-dense="true" option-value=""></q-select>
-          <div>
-            <q-btn color="primary col-4" label="Ok" @click="getColumnsTable()" />
-          </div>
-        </q-card-section>
-      </q-form>
-
-      <q-card-section class="my-card">
-        <q-table hide-header hide-bottom :rows-per-page-options="[this.columnsList.length]" row-key="columnsList"
-          :rows="slicedRows" :columns="columns">
-          <template v-slot:body-cell-anonymization="props">
-            <q-select filled v-model="anonymizationTechniquesSelect[props.row.index]"
-              :options="anonymizationTechniquesList" label="Select anonymization techniques" color="teal" clearable
-              options-selected-class="text-deep-orange">
-            </q-select>
-          </template>
-        </q-table>
-      </q-card-section>
-
-      <q-card-section name="anonymization-buttons">
-        <div class="q-mt-md row">
-          <q-btn v-if="(this.columnsCounter != 6)" color="primary col grow" label="Send data"
-            @click="setColumnsAnonymization()" />
-        </div>
-        <div class="q-mt-md row">
-          <q-btn v-if="(this.columnsCounter === 6)" color="grey col grow" label="ANONYMIZATION"
-            @click="sendDataForEncryption()" />
-
+    <q-card-section>
+      <div class="q-px-md">Select the table you want to anonymize</div>
+      <q-card-section class="row justify-between">
+        <q-select
+          class="col q-pr-md"
+          outlined
+          v-model="tableSelect"
+          :options="tableList"
+          :dense="true"
+          :options-dense="true"
+        ></q-select>
+        <div>
+          <q-btn
+            color="primary col-4"
+            label="Ok"
+            @click="getTableColumnsInfo()"
+          />
         </div>
       </q-card-section>
+    </q-card-section>
 
-      <q-dialog v-model="startAnonymizationDialog">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">Alert</div>
-          </q-card-section>
-
-          <q-card-section class="q-pt-none">
-            The anonymization proccess was started sucessfully.
-          </q-card-section>
-
-          <q-card-actions align="right">
-            <q-btn flat label="OK" color="primary" onclick="location.href='./client/databases'" v-close-popup />
-          </q-card-actions>/
-        </q-card>
-      </q-dialog>
-
-    </q-card>
-
-
-  </q-page>
+    <q-card-section class="columns-table">
+      <q-table class="custom-table" :rows="dBColumnsInfo" :columns="columns" row-key="column">
+        <template v-slot:body-cell-anonymization="props">
+          <q-select
+            v-model="props.row.anonymization"
+            :options="anonymizationTechniquesName"
+            @input="
+              updateAnonymizationTechnique(
+                props.row,
+                props.row.anonymizationTechinique
+              )
+            "
+          />
+        </template>
+      </q-table>
+      <div class="q-mt-md row">
+      <q-btn  label="Protect Data" color="primary" @click="this.recordAllColumns()"></q-btn>
+    </div>
+    </q-card-section>
+  </q-card>
 </template>
 
 <script>
-import { Notify, Loading } from 'quasar'
-import { api } from 'src/boot/axios'
-import { defineComponent } from 'vue'
-import { mapGetters } from 'vuex'
-import { ref } from 'vue'
-import { useQuasar } from 'quasar'
+import { defineComponent } from "vue";
+import { api } from "src/boot/axios";
+import { mapGetters } from "vuex";
+import { Notify, Loading } from "quasar";
+import { ref } from "vue";
 
 export default defineComponent({
-  name: 'anonymitazation-table-picker',
+  name: "anonymitazation-table-picker",
+
   computed: {
-    ...mapGetters('auth', ['getToken']),
-    ...mapGetters('auth', ['isAuthenticated'])
+    ...mapGetters("auth", ["getToken"]),
   },
   methods: {
-    //refatorado
-    getTableList() {
-      console.log("getTableList")
-      if (!this.getToken) return
-      api.get(`database/table_names/${this.selectedDatabaseId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.getToken}`
-        }
-      }).then(response => {
-        this.tableList = response.data.table_names
-      }).catch(err => {
-        console.log(err.mesage)
-      })
-    },
-    getColumnsTable() {
-      if (!this.getToken) return
-      const data = {
-        id_db: this.selectedDatabaseId,
-        table: this.tableSelect
-      }
-      api.post('/columnsDatabase', data, {
-        headers: { Authorization: `Bearer ${this.getToken}` }
-      }).then(response => {
-        if (this.slicedRows.length != 0) this.slicedRows = []
-
-        const keys = Object.keys(response.data)
-        const value = Object.values(response.data)
-        this.columnsList = keys
-
-        this.getAnonymizationType()
-
-        keys.forEach((key, id) => {
-          this.slicedColumns.push(key)
-          this.slicedRows.push({
-            comlumnsList: key,
-            dataType: value[id],
-            index: id
-          })
-        })
-
-        this.setDefaultNotSensitiveOption()
-
-      }).catch(err => {
-        console.log(err.mesage)
-      })
-    },
-    getAnonymizationType() {
-      if (!this.getToken) return
-      api.get('/getAnonymizationType', {
-        headers: {
-          Authorization: `Bearer ${this.getToken}`
-        }
-      }).then(response => {
-
-        //getting each name and id from response data
-        response.data.forEach((key, id) => {
-          this.anonymizationTechniquesList.push(key.name)
-          this.anonymization.push({
-            id: key.id,
-            name: key.name
-          })
-        })
-
-        //searching anonymization ppcbtf to get id
-        this.anonymization.forEach((key) => {
-          if (key.name == "ppcbtf") {
-            console.log(key.id)
-          }
-        })
-
-      }).catch(err => {
-        console.log(err)
-      })
-    },
-
-    //defining Not sensitive as default
-    setDefaultNotSensitiveOption() {
-      var arr = []
-      arr = JSON.parse(JSON.stringify(this.slicedColumns))
-      console.log('teste array:')
-      let length = arr.length
-      console.log(length)
-      arr.forEach((key) => {
-        this.anonymizationTechniquesSelect.push('Not sensitive')
-      })
-    },
-
-    //transforming the data into the type required by the back-end
-    setColumnsAnonymization() {
-
-      var anonymizationJSON = []
-      anonymizationJSON = JSON.parse(JSON.stringify(this.anonymization))
-
-      var anonymizationTechniquesSelectJSON = []
-      anonymizationTechniquesSelectJSON = JSON.parse(JSON.stringify(this.anonymizationTechniquesSelect))
-
-      var dict_anonymization = new Object()
-
-      anonymizationJSON.forEach((key) => {
-        dict_anonymization[key.name] = key.id
-      })
-
-      var anonymizationColumns = new Object()
-
-      anonymizationTechniquesSelectJSON.forEach((key, index) => {
-
-        let type = dict_anonymization[key]
-
-        if (typeof anonymizationColumns[type] === 'undefined') {
-          var new_array = []
-          new_array.push(this.columnsList[index])
-          anonymizationColumns[type] = new_array
-        }
-        else {
-          var new_array = []
-          new_array = anonymizationColumns[type]
-          new_array.push(this.columnsList[index])
-          anonymizationColumns[type] = new_array
-        }
-      })
-
-      //sending each column
-      let cont = 0;
-      this.anonymization.forEach((key) => {
-        this.columnsCounter = 0
-        let anonymization_id = key.id
-        this.sendDataForAnonymization(anonymization_id, anonymizationColumns[anonymization_id])
-        cont = cont + 1;
-        console.log("index" + cont)
-
-      })
-
-    },
-
-    sendDataForAnonymization(id_anonymization, anonymizationColumns) {
-      if (!this.getToken) return
-      const data = {
-        id_db: this.selectedDatabaseId,
-        id_anonymization_type: id_anonymization,
-        table: this.tableSelect,
-        columns: anonymizationColumns
-      }
-      api.post('/addAnonymization', data, {
-        headers: {
-          Authorization: `Bearer ${this.getToken}`
-        }
-      }).then(response => {
-        this.columnsCounter = this.columnsCounter + 1
-      }).catch(err => {
-        console.log(err)
-      })
-    },
-
-    sendDataForEncryption() {
-      const data = {
-        'id_db': parseInt(this.selectedDatabaseId),
-        'table': this.tableSelect
-      }
-
-      if (!this.getToken) return
-
-      api.post('/sendDataForEncryptionbase', data, {
-        headers: {
-          Authorization: `Bearer ${this.getToken}`
-        }
-      }).then(response => {
-        console.log(response.data)
-
-
-        this.startAnonymizationAlert()
-
-        this.anonymization()
-
-      }).catch(err => {
-        console.log(err)
-      })
-    },
-    anonymization() {
-      if (!this.getToken) return
-      const data = {
-        'id_db': this.selectedDatabaseId,
-        'table': this.tableSelect
-      }
-      api.post('/anonymizationDatabase', data, {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${this.getToken}`
-        }
-      }).then(response => {
-        console.log("deubom")
-        console.log(response.data)
+    checkSelectedDatabase() {
+      if (!this.selectedDatabaseId) {
         Notify.create({
-          type: 'positive',
-          message: 'Anonymization completed!',
+          type: "negative",
+          message: "You need to select a database to procced",
+          timeout: 2000,
+        });
+        this.$router.push("/client/anonymization/databases");
+      } else {
+        this.getTableList();
+        this.getAnonymizationList();
+      }
+    },
+    updateAnonymizationTechnique(column, anonymization) {
+      column.anonymization = anonymization;
+      console.log(this.dBColumnsInfo);
+    },
+    getTableList() {
+      if (!this.getToken) return;
+      Loading.show();
+
+      api
+        .get(`database/table_names/${this.selectedDatabaseId}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.getToken}`,
+          },
+        })
+        .then((response) => {
+          this.tableList = response.data.table_names;
+          Loading.hide();
+        })
+        .catch((err) => {
+          Loading.hide();
+          Notify.create({
+          type: 'negative',
+          message: 'Error retrieving table list',
           timeout: 1000
         })
-        this.$router.push('./databases')
-      }).catch(err => {
-        console.log(err)
-      })
-    }
+        });
+    },
+    getAnonymizationList() {
+      if (!this.getToken) return;
+      api
+        .get("./anonymization_type", {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.getToken}`,
+          },
+        })
+        .then((response) => {
+          this.anonymizationTechniques = response.data;
+          const resp = response.data.items;
+          this.anonymizationTechniquesName = resp.map((resp) => resp.name);
+        })
+        .catch((err) => {
+          Notify.create({
+          type: 'negative',
+          message: 'Error retrieving anonymization data',
+          timeout: 1000
+        })
+        });
+    },
+    getTableColumnsInfo() {
+      if (!this.getToken) return;
+      Loading.show();
+      api
+        .get(
+          `database/table_columns/${this.selectedDatabaseId}?table_name=${this.tableSelect}`,
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${this.getToken}`,
+            },
+          }
+        )
+        .then((response) => {
+          Loading.hide();
+          this.dBColumnsInfo = response.data.table_columns;
+          this.dBColumnsInfo.forEach((dic) => (dic["anonymization"] = null));
+          this.columnNamesList = this.dBColumnsInfo.map((dic) => dic.name);
+        })
+        .catch((err) => {
+          Loading.hide()
+          Notify.create({
+          type: 'negative',
+          message: 'Error retrieving columns data',
+          timeout: 1000
+        })
+        });
+    },
+    async recordAllColumns() {
+      try {
+
+        let promises = [];
+        for (var i = 1; i <= this.anonymizationTechniquesName.length; i++) {
+          const item = this.anonymizationTechniques.items.find(
+            (item) => item.id === i
+          );
+          var columnsToRecord = this.dBColumnsInfo
+            .filter((d) => d.anonymization === item.name)
+            .map((d) => d.name);
+          promises.push(this.recordColumn(columnsToRecord, i));
+        }
+
+        const results = await Promise.allSettled(promises);
+
+        results.forEach((result) => {
+          if (result.status != "fulfilled") {
+            throw new Error(
+              "Async function error:  " + result.reason
+            );
+          }
+        });
+
+        const encryptResponse = await this.encryptRecordedData();
+        const encryptError =
+          encryptResponse.status !== 200
+            ? encryptResponse.data
+            : null;
+        if (encryptError) {
+          throw new Error(`${encryptError}`);
+        }
+
+        const anonymizeResponse = await this.anonymizeRecordedData();
+        const anonymizeError =
+          anonymizeResponse.status !== 200
+            ? anonymizeResponse.data
+            : null;
+
+        if (anonymizeError) {
+          throw new Error(`${anonymizeError}`);
+        }
+
+        Notify.create({
+          type: "positive",
+          message: "Your data is protected",
+          timeout: 2000,
+        });
+
+      } catch (error) {
+        Notify.create({
+          type: 'negative',
+          message: 'Error protecting data',
+          timeout: 1500
+        })
+      }
+    },
+    async recordColumn(columns, id) {
+
+      const data = {
+        database_id: parseInt(this.selectedDatabaseId),
+        anonymization_type_id: id,
+        table_name: this.tableSelect,
+        columns: columns,
+      };
+
+      return new Promise((resolve, reject) => {
+        api
+          .post("/anonymization_record", data, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${this.getToken}`,
+            },
+          })
+          .then((response) => {
+            resolve(response.data);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    async encryptRecordedData() {
+
+      const data = {table_name: this.tableSelect}
+      return new Promise((resolve, reject) => {
+        api
+          .post(
+            `/encryption/database/${this.selectedDatabaseId}`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${this.getToken}`,
+              },
+            }
+          )
+          .then((response) => {
+            resolve(response.data);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
+    async anonymizeRecordedData() {
+
+      const data = {table_name: this.tableSelect}
+      return new Promise((resolve, reject) => {
+        api
+          .post(
+            `/anonymization/database/${this.selectedDatabaseId}`,
+            data,
+            {
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${this.getToken}`,
+              },
+            }
+          )
+          .then((response) => {
+            resolve(response.data);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
+    },
   },
   data() {
-    const $q = useQuasar()
-
-    function startAnonymizationAlert() {
-      $q.dialog({
-        title: 'Alert',
-        message: 'Anonymization started, you will be notificated when it ends.'
-      })
-    }
-
-    const columnsDatabase = [
+    const columns = [
       {
-        label: 'Columns',
-        field: 'comlumnsList',
-        name: 'comlumnsList',
-        align: 'left'
+        label: "Column",
+        field: "name",
+        name: "name",
+        align: "left",
       },
       {
-        label: 'Data Type',
-
-        field: row => row.dataType,
-        name: 'dataType',
-        align: 'left'
+        label: "Data Type",
+        field: "type",
+        name: "type",
+        align: "left",
       },
       {
-        label: 'Anonymization',
-        field: 'anonymization',
-        name: 'anonymization',
-        align: 'left'
-      }
-    ]
-
-    let columnsCounter = 0
-    const slicedRows = []
-    const anonymizationTechniquesSelect = ref([])
-
-    //defining one independent select for each row
-    let rows = slicedRows.slice(0).map(r => ({ ...r }))
-    rows.forEach((row, index) => {
-      row.index = index
-    })
-    rows.forEach(() => {
-      anonymizationTechniquesSelect.value.push('');
-    })
-
+        label: "Select Anonymization",
+        field: "anonymization",
+        name: "anonymization",
+        align: "left",
+        format: (value) => value,
+      },
+    ];
     return {
-      anonymizationTechniquesList: [],
+      selectedDatabaseId: "",
       tableList: [],
-
       tableSelect: ref(null),
-      tableSelect: '',
-      anonymizationTechniquesSelect,
-
-      columnsDatabase,
-
-      slicedRows,
-      rows,
-      slicedColumns: [],
-      columnsList: [],
-
-      startAnonymizationAlert,
-      startAnonymizationDialog: ref(false),
-
-      selectedDatabaseId: '',
-      columnsCounter
-    }
+      columns,
+      dBColumnsInfo: [],
+      rowsToAnonymize: [],
+    };
   },
   created() {
-    this.selectedDatabaseId = this.$route.params.data
-    this.getTableList()
-  }
-})
+    this.selectedDatabaseId = this.$route.params.data;
+    this.checkSelectedDatabase();
+
+  },
+});
 </script>

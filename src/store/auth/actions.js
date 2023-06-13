@@ -22,7 +22,7 @@ export const signOut = ({ commit }) => {
 }
 
 export const getMe = async ({ commit }, token) => {
-  await api.get('/getUser', {
+  await api.get('/user/current', {
     headers: {
       Authorization: `Bearer ${token}`
     }
