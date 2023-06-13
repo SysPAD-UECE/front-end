@@ -6,6 +6,8 @@ const routes = [
       { path: '', name: 'start-page', component: () => import('pages/Login.vue') },
       { path: 'login', name: 'login', component: () => import('pages/Login.vue') },
       { path: '/register', component: () => import('pages/Register.vue') },
+      { path: '/forgot-password', name: 'forgot-password', component: () => import('pages/ForgotPassword.vue') },
+      { path: '/change-password', name: 'change-password', component: () => import('pages/ChangePassword.vue') },
     ]
   },
 
