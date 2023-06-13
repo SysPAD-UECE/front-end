@@ -30,6 +30,19 @@
             </div>
           </q-form>
         </q-card-section>
+        <q-card-section v-if="this.emailSent">
+          <q-form class="q-gutter-md" @submit.prevent="submitForgotPassword">
+
+            <q-input label="Insert your e-mail" v-model="email" :rules="[
+              val => !!val || 'Email is empty'
+            ]">
+            </q-input>
+            <div>
+              <q-btn class="full-width" color="primary" label="Resend" type="submit" rounded></q-btn>
+
+            </div>
+          </q-form>
+        </q-card-section>
       </q-card>
     </div>
   </div>
@@ -45,6 +58,7 @@ export default defineComponent({
   name: 'Login',
   data() {
     return {
+      emailSent: false,
       login: {
         email: 'convidado@example.com',
         password: 'convidado123'
@@ -61,6 +75,7 @@ export default defineComponent({
   methods: {
 
     async submitForgotPassowrd() {
+      this.emailSent = true
       try {
         this.$router.push()
         Notify.create({
