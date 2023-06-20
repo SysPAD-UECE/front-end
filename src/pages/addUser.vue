@@ -80,7 +80,7 @@ export default defineComponent({
         Notify.create({
           type: 'negative',
           message: err.response.data.error,
-          message: 'erro',
+          message: 'error',
           timeout: 1000
         })
       })

@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md" v-show='!this.$q.loading.isActive'>
     <q-card-section>
-      <div class="text-h6">Administrator Panel</div>
+      <div class="text-h6">Admin Panel</div>
     </q-card-section>
     <q-card>
       <q-card-section>
@@ -86,7 +86,8 @@ export default defineComponent({
         }).then(response => {
           Notify.create({
             type: 'positive',
-            message: response.data.message,
+            message: 'user deleted',
+
             timeout: 1000
           })
           this.users = this.users.filter(element => element.id !== id)
@@ -94,6 +95,7 @@ export default defineComponent({
           Notify.create({
             type: 'negative',
             message: err.response.data.error,
+
             timeout: 1000
           })
         })
