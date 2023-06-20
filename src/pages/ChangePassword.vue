@@ -96,7 +96,7 @@ export default defineComponent({
 <style scoped>
 .wave {
   position: fixed;
-  height: 100%;
+  height: 70%;
   left: 0;
   bottom: 0;
   z-index: -1;
