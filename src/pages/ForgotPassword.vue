@@ -49,7 +49,7 @@
                 color="primary"
                 label="Resend email"
                 rounded
-                :disabled="pausedFor5Seconds"
+                :disabled="pausedFor30Seconds"
                 @click="this.postForgotPassword()"
               ></q-btn>
               <q-btn
@@ -78,7 +78,7 @@ export default defineComponent({
   name: "Login",
   data() {
     return {
-      pausedFor5Seconds: true,
+      pausedFor30Seconds: true,
       emailSent: false,
       email: ref(null),
     };
@@ -92,8 +92,8 @@ export default defineComponent({
       const data = {
         email: this.email
       }
-      this.pausedFor5Seconds = true;
-      setTimeout(() => (this.pausedFor5Seconds = false), 30000);
+      this.pausedFor30Seconds = true;
+      setTimeout(() => (this.pausedFor30Seconds = false), 30000);
       api
         .post("/password/forgot", data, {
           headers: {
@@ -124,7 +124,7 @@ export default defineComponent({
     },
     changeEmail() {
       this.emailSent = false;
-      this.pausedFor5Seconds = true;
+      this.pausedFor30Seconds = true;
 
       try {
         this.$router.push();
