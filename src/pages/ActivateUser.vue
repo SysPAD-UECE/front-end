@@ -11,7 +11,7 @@
           <div class="q-pt-lg">
             <div class="col text-h6 ellipsis flex justify-center">
               <h2 class="text-h3 text-uppercase q-my-none text-weight-regular">
-                Forgot Password
+                User Activation
               </h2>
             </div>
           </div>
