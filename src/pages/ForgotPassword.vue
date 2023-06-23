@@ -107,14 +107,13 @@ export default defineComponent({
         .catch(function (err) {
           Loading.hide()
           const status = err.response.status
-          this.$router.push({ name: 'login' })
+          // this.$router.push({ name: 'login' })
           if (status === 404) {
           Notify.create({
             type: "negative",
             message: "This user is invalid. Try again later.",
             timeout: 2000
           });
-          this.$router.push({ name: "login" });
           this.resendEmail()
         } else {
           Notify.create({
