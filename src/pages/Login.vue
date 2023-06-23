@@ -33,7 +33,7 @@
             <div>
               <q-btn class="full-width" color="primary" label="Login" type="submit" rounded></q-btn>
               <div class="text-center q-mt-sm q-gutter-lg">
-                <router-link class="text-white" to="/login">Forgot password?</router-link>
+                <router-link class="text-white" to="/forgot">Forgot password?</router-link>
                 <router-link class="text-white" to="/register">Create an account</router-link>
               </div>
             </div>
