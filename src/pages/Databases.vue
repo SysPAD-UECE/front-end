@@ -191,9 +191,23 @@ export default defineComponent({
       }).then(response => {
         this.databasesList = response.data.items
         Loading.hide()
-      }).catch(err => {
-        console.log(err)
-      })
+      }).catch(function (err) {
+          Loading.hide()
+          const status = err.response.status
+          if (status === 401) {
+          Notify.create({
+            type: "negative",
+            message: "Your login token is invalid! Try again later.",
+            timeout: 2000
+          });
+        } else {
+          Notify.create({
+            type: "negative",
+            message: "Oops! Something went wrong. Please try again later.",
+            timeout: 2000,
+          });
+        }
+        });
     },
     getValidDatabases() {
       if (!this.getToken) return
@@ -203,9 +217,16 @@ export default defineComponent({
         }
       }).then(response => {
         this.validDatabases = response.data.items
-      }).catch(err => {
-        console.log(err)
-      })
+      }).catch(function (err) {
+          Loading.hide()
+
+          Notify.create({
+            type: "negative",
+            message: "Oops! Something went wrong. Please try again later.",
+            timeout: 2000,
+          });
+
+        });
     },
     sendEditDatabase(id, valid_database, name, host, username, port, password){
 
@@ -242,7 +263,11 @@ export default defineComponent({
         })
         .then((response) => {console.log("deubom")})
         .catch((err) => {
-          console.log(err);
+          Notify.create({
+            type: "negative",
+            message: "Oops! Something went wrong. Please try again later.",
+            timeout: 2000,
+          });
         });
     },
 
@@ -266,8 +291,32 @@ submitTestConnectionByURL() {
           },
         })
         .then((response) => {console.log("deubom")})
-        .catch((err) => {
-          console.log(err);
+        .catch(function (err) {
+          Loading.hide()
+          const status = err.response.status
+          if (status === 401) {
+          Notify.create({
+            type: "negative",
+            message: "Your login token is invalid! Try again later.",
+            timeout: 2000
+          });
+         } else if (status === 409) {
+          Notify.create({
+            type: "negative",
+            message: "Your database is not connected. Try edit the informations",
+            timeout: 5000,
+            actions: [
+            { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
+          ]
+          });
+        }
+        else {
+          Notify.create({
+            type: "negative",
+            message: "Oops! Something went wrong. Please try again later.",
+            timeout: 2000,
+          });
+        }
         });
     },
     TestConnection(database) {
@@ -286,14 +335,33 @@ submitTestConnectionByURL() {
           message: res.data.message,
           timeout: 1000
         })
-      }).catch((err) => {
-        console.log(err)
-        Notify.create({
-          type: 'negative',
-          message: err.response.data.message,
-          timeout: 1000
-        })
-      })
+      }).catch(function (err) {
+          Loading.hide()
+          const status = err.response.status
+          if (status === 401) {
+          Notify.create({
+            type: "negative",
+            message: "Your login token is invalid! Try again later.",
+            timeout: 2000
+          });
+         } else if (status === 409) {
+          Notify.create({
+            type: "negative",
+            message: "Your database is not connected. Try edit the informations",
+            timeout: 5000,
+            actions: [
+            { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
+          ]
+          });
+        }
+        else {
+          Notify.create({
+            type: "negative",
+            message: "Oops! Something went wrong. Please try again later.",
+            timeout: 2000,
+          });
+        }
+        });
     },
     submitAddDatabase() {
       if (!this.getToken) return
@@ -316,14 +384,24 @@ submitTestConnectionByURL() {
         // this.getDatabasesList()
         // this.$router.push('/client/databases')
 
-      }).catch((err) => {
-        console.log(err)
-        Notify.create({
-          type: 'negative',
-          message: err.response.data.error,
-          timeout: 1000
-        })
-      })
+      }).catch(function (err) {
+          Loading.hide()
+          const status = err.response.status
+          if (status === 401) {
+          Notify.create({
+            type: "negative",
+            message: "Your login token is invalid! Try again later.",
+            timeout: 2000
+          });
+         }
+        else {
+          Notify.create({
+            type: "negative",
+            message: "Oops! Something went wrong. Please try again later.",
+            timeout: 2000,
+          });
+        }
+        });
     },
     //ok
     submitDelete(databaseId) {
@@ -342,13 +420,24 @@ submitTestConnectionByURL() {
             timeout: 1000
           })
           this.getDatabases()
-        }).catch(err => {
+        }).catch(function (err) {
+          Loading.hide()
+          const status = err.response.status
+          if (status === 401) {
           Notify.create({
-            type: 'negative',
-            message: err.response.data.error,
-            timeout: 1000
-          })
-        })
+            type: "negative",
+            message: "Your login token is invalid! Try again later.",
+            timeout: 2000
+          });
+         }
+        else {
+          Notify.create({
+            type: "negative",
+            message: "Oops! Something went wrong. Please try again later.",
+            timeout: 2000,
+          });
+        }
+        });
       })
     }
   },

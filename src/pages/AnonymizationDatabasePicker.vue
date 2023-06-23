@@ -73,15 +73,12 @@ export default defineComponent({
       .catch(function (err) {
           Loading.hide()
           const status = err.response.status
-          this.$router.push({ name: 'login' })
           if (status === 401) {
           Notify.create({
             type: "negative",
             message: "Your login token is invalid! Try again later.",
             timeout: 2000
           });
-          this.$router.push({ name: "login" });
-          this.resendEmail()
         } else {
           Notify.create({
             type: "negative",
