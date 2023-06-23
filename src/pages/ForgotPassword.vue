@@ -106,18 +106,21 @@ export default defineComponent({
         })
         .catch(function (err) {
           Loading.hide()
-          console.log("ERRO:" + err.response.status);
-          if (err.response.status === 404 || err.response.status === 409){
+          const status = err.response.status
+          this.$router.push({ name: 'login' })
+          if (status === 404) {
           Notify.create({
             type: "negative",
-            message: "Invalid email. Try again later.",
-            timeout: 1000,
+            message: "This user is invalid. Try again later.",
+            timeout: 2000
           });
+          this.$router.push({ name: "login" });
+          this.resendEmail()
         } else {
           Notify.create({
             type: "negative",
-            message: "Try again later.",
-            timeout: 1000,
+            message: "Oops! Something went wrong. Please try again later.",
+            timeout: 2000,
           });
         }
         });
