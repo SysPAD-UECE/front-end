@@ -15,19 +15,19 @@
         </div>
       </q-card-section>
       <q-card-section name="quasar-table" class="q-pa-none">
-        <q-table :rows="databasesList" :columns="columns"  :rows-per-page-options="[0]" separator="cell" row-key="name" class="col">
-          <template  name="props-show-password" v-slot:body-cell-password="props">
+        <q-table :rows="databasesList" :columns="columns" :rows-per-page-options="[0]" separator="cell" row-key="name"
+          class="col">
+          <template name="props-show-password" v-slot:body-cell-password="props">
             <q-td :props="props">
-            <div class="absolute-center q-mr-md" >
-              {{ props.row.showPassword ? (props.row.password ? props.row.password : 'EMPTY') : '*******' }}
-              <q-btn color="grey" size="sm" class="q-ml-sm" flat dense v-if="props.row.password !== null"
-                v-bind:icon="props.row.showPassword ? 'visibility_off' : 'visibility'"
-                @click="toggleShowPassword(props.row)" />
-              <q-tooltip>Show Password</q-tooltip>
-            </div>
+              <div class="absolute-center q-mr-md">
+                {{ props.row.showPassword ? (props.row.password ? props.row.password : 'EMPTY') : '*******' }}
+                <q-btn color="grey" size="sm" class="q-ml-sm" flat dense v-if="props.row.password !== null"
+                  v-bind:icon="props.row.showPassword ? 'visibility_off' : 'visibility'"
+                  @click="toggleShowPassword(props.row)" />
+                <q-tooltip>Show Password</q-tooltip>
+              </div>
             </q-td>
           </template>
-
           <template name="props-name" v-slot:body-cell-name="props">
             <q-td :props="props">
               <q-item style="max-width: 420px">
@@ -45,7 +45,8 @@
                 @click="TestConnection(props.row)">
                 <q-tooltip>Test Connection</q-tooltip>
               </q-btn>
-              <q-btn color="green-7" icon="edit" size="sm" class="q-ml-sm" flat dense @click="sendEditDatabase(props.row.id, props.row.valid_database, props.row.name, props.row.host, props.row.username, props.row.port, props.row.password)">
+              <q-btn color="green-7" icon="edit" size="sm" class="q-ml-sm" flat dense
+                @click="sendEditDatabase(props.row.id, props.row.valid_database, props.row.name, props.row.host, props.row.username, props.row.port, props.row.password)">
                 <q-tooltip>Edit</q-tooltip>
               </q-btn>
               <q-btn color="red" icon="delete" size="sm" class="q-ml-sm" flat dense @click="submitDelete(props.row.id)">
@@ -69,7 +70,9 @@
           </q-card-section>
 
           <q-card-section class="row flex-center">
-            <q-select class="col-8" label="Select database type" outlined v-model="database.databaseTypeName" :options="validDatabases" stack-label :dense="true" :options-dense="true" option-label="name" option-value="" :rules="[
+            <q-select class="col-8" label="Select database type" outlined v-model="database.databaseTypeName"
+              :options="validDatabases" stack-label :dense="true" :options-dense="true" option-label="name"
+              option-value="" :rules="[
                 val => !!val || 'Database type is empty'
               ]" />
             <q-input class="col-8 " stack-label label="Name" v-model="database.name" :rules="[
@@ -96,8 +99,7 @@
 
 
           <q-card-actions class="q-pb-md row flex-center text-primary">
-            <q-btn style="width: 150px" color="primary" label="Test Connection"
-              @click="this.submitTestConnectionByURL()">
+            <q-btn style="width: 150px" color="primary" label="Test Connection" @click="this.submitTestConnectionByURL()">
             </q-btn>
 
             <q-item>
@@ -117,7 +119,9 @@
           </q-card-section>
 
           <q-card-section class="row flex-center">
-            <q-select class="col-8" label="Select database type" outlined v-model="databaseEdit.databaseTypeId" :options="validDatabases" stack-label :dense="true" :options-dense="true" option-label="name" option-value="" :rules="[
+            <q-select class="col-8" label="Select database type" outlined v-model="databaseEdit.databaseTypeId"
+              :options="validDatabases" stack-label :dense="true" :options-dense="true" option-label="name"
+              option-value="" :rules="[
                 val => !!val || 'Database type is empty'
               ]" />
             <q-input class="col-8 " stack-label label="Name" v-model="databaseEdit.name" :rules="[
@@ -144,8 +148,7 @@
 
 
           <q-card-actions class="q-pb-md row flex-center text-primary">
-            <q-btn style="width: 150px" color="primary" label="Test Connection"
-              @click="this.submitTestConnectionByURL()">
+            <q-btn style="width: 150px" color="primary" label="Test Connection" @click="this.submitTestConnectionByURL()">
             </q-btn>
 
             <q-item>
@@ -192,22 +195,8 @@ export default defineComponent({
         this.databasesList = response.data.items
         Loading.hide()
       }).catch(function (err) {
-          Loading.hide()
-          const status = err.response.status
-          if (status === 401) {
-          Notify.create({
-            type: "negative",
-            message: "Your login token is invalid! Try again later.",
-            timeout: 2000
-          });
-        } else {
-          Notify.create({
-            type: "negative",
-            message: "Oops! Something went wrong. Please try again later.",
-            timeout: 2000,
-          });
-        }
-        });
+        Loading.hide()
+      });
     },
     getValidDatabases() {
       if (!this.getToken) return
@@ -218,18 +207,10 @@ export default defineComponent({
       }).then(response => {
         this.validDatabases = response.data.items
       }).catch(function (err) {
-          Loading.hide()
-
-          Notify.create({
-            type: "negative",
-            message: "Oops! Something went wrong. Please try again later.",
-            timeout: 2000,
-          });
-
-        });
+        Loading.hide()
+      });
     },
-    sendEditDatabase(id, valid_database, name, host, username, port, password){
-
+    sendEditDatabase(id, valid_database, name, host, username, port, password) {
       this.editDatabaseDialog = true
       this.databaseEdit.id = id
       this.databaseEdit.databaseTypeId = ref(valid_database)
@@ -238,14 +219,10 @@ export default defineComponent({
       this.databaseEdit.user = ref(username)
       this.databaseEdit.port = ref(port)
       this.databaseEdit.password = ref(password)
-      console.log(this.databaseEdit)
-
-
     },
-    submitEditDatabase(){
-      console.log(this.databaseEdit.id)
+    submitEditDatabase() {
+      Loading.show()
       if (!this.getToken) return;
-
       const data = {
         "valid_database_id": this.databaseEdit.databaseTypeId.id,
         "name": this.databaseEdit.name,
@@ -254,26 +231,52 @@ export default defineComponent({
         "port": parseInt(this.databaseEdit.port),
         "password": this.databaseEdit.password
       }
-      console.log("aquiiiii"+ JSON.stringify(data))
       api
         .put(`/database/${this.databaseEdit.id}`, data, {
           headers: {
             Authorization: `Bearer ${this.getToken}`,
           },
         })
-        .then((response) => {console.log("deubom")})
-        .catch((err) => {
+        .then((response) => { 
+          Loading.hide()
+          Notify.create({
+            type: "positive",
+            message: "Database information changed successfully.",
+            timeout: 2000
+          })
+        })
+        .catch(function (err) {
+          Loading.hide()
+          const status = err.response.status
+           if (status === 401) {
+          Notify.create({
+            type: "negative",
+            message: "Unauthorized user.",
+            timeout: 2000
+          })
+        } else if (status === 409) {
+          Notify.create({
+            type: "negative",
+            message: "Your activation token is invalid! We have sent a new activation email to you. Please check your inbox.",
+            timeout: 5000,
+            actions: [
+            { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
+          ]
+          });
+          // this.resendEmail()
+        } else {
           Notify.create({
             type: "negative",
             message: "Oops! Something went wrong. Please try again later.",
             timeout: 2000,
           });
+        }
         });
     },
 
 
 
-submitTestConnectionByURL() {
+    submitTestConnectionByURL() {
       if (!this.getToken) return;
 
       const data = {
@@ -281,7 +284,7 @@ submitTestConnectionByURL() {
         name: this.database.name,
         host: this.database.host,
         username: this.database.user,
-        port:  parseInt(this.database.port),
+        port: parseInt(this.database.port),
         password: this.database.password,
       };
       api
@@ -290,33 +293,33 @@ submitTestConnectionByURL() {
             Authorization: `Bearer ${this.getToken}`,
           },
         })
-        .then((response) => {console.log("deubom")})
+        .then((response) => { console.log("deubom") })
         .catch(function (err) {
           Loading.hide()
           const status = err.response.status
           if (status === 401) {
-          Notify.create({
-            type: "negative",
-            message: "Your login token is invalid! Try again later.",
-            timeout: 2000
-          });
-         } else if (status === 409) {
-          Notify.create({
-            type: "negative",
-            message: "Your database is not connected. Try edit the informations",
-            timeout: 5000,
-            actions: [
-            { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
-          ]
-          });
-        }
-        else {
-          Notify.create({
-            type: "negative",
-            message: "Oops! Something went wrong. Please try again later.",
-            timeout: 2000,
-          });
-        }
+            Notify.create({
+              type: "negative",
+              message: "Your login token is invalid! Try again later.",
+              timeout: 2000
+            });
+          } else if (status === 409) {
+            Notify.create({
+              type: "negative",
+              message: "Your database is not connected. Try edit the informations",
+              timeout: 5000,
+              actions: [
+                { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
+              ]
+            });
+          }
+          else {
+            Notify.create({
+              type: "negative",
+              message: "Oops! Something went wrong. Please try again later.",
+              timeout: 2000,
+            });
+          }
         });
     },
     TestConnection(database) {
@@ -336,22 +339,22 @@ submitTestConnectionByURL() {
           timeout: 1000
         })
       }).catch(function (err) {
-          Loading.hide()
-          const status = err.response.status
-          if (status === 401) {
+        Loading.hide()
+        const status = err.response.status
+        if (status === 401) {
           Notify.create({
             type: "negative",
             message: "Your login token is invalid! Try again later.",
             timeout: 2000
           });
-         } else if (status === 409) {
+        } else if (status === 409) {
           Notify.create({
             type: "negative",
             message: "Your database is not connected. Try edit the informations",
             timeout: 5000,
             actions: [
-            { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
-          ]
+              { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
+            ]
           });
         }
         else {
@@ -361,7 +364,7 @@ submitTestConnectionByURL() {
             timeout: 2000,
           });
         }
-        });
+      });
     },
     submitAddDatabase() {
       if (!this.getToken) return
@@ -385,15 +388,15 @@ submitTestConnectionByURL() {
         // this.$router.push('/client/databases')
 
       }).catch(function (err) {
-          Loading.hide()
-          const status = err.response.status
-          if (status === 401) {
+        Loading.hide()
+        const status = err.response.status
+        if (status === 401) {
           Notify.create({
             type: "negative",
             message: "Your login token is invalid! Try again later.",
             timeout: 2000
           });
-         }
+        }
         else {
           Notify.create({
             type: "negative",
@@ -401,7 +404,7 @@ submitTestConnectionByURL() {
             timeout: 2000,
           });
         }
-        });
+      });
     },
     //ok
     submitDelete(databaseId) {
@@ -424,19 +427,19 @@ submitTestConnectionByURL() {
           Loading.hide()
           const status = err.response.status
           if (status === 401) {
-          Notify.create({
-            type: "negative",
-            message: "Your login token is invalid! Try again later.",
-            timeout: 2000
-          });
-         }
-        else {
-          Notify.create({
-            type: "negative",
-            message: "Oops! Something went wrong. Please try again later.",
-            timeout: 2000,
-          });
-        }
+            Notify.create({
+              type: "negative",
+              message: "Your login token is invalid! Try again later.",
+              timeout: 2000
+            });
+          }
+          else {
+            Notify.create({
+              type: "negative",
+              message: "Oops! Something went wrong. Please try again later.",
+              timeout: 2000,
+            });
+          }
         });
       })
     }

@@ -16,8 +16,8 @@ const routes = [
     path: '/client',
     component: () => import('layouts/ClientLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/Home.vue') },
-      { path: 'home', name: 'home', component: () => import('pages/Home.vue') },
+      { path: '', component: () => import('pages/Databases.vue') },
+      { path: 'home', name: 'home', component: () => import('pages/Databases.vue') },
       { path: 'databases', component: () => import('pages/Databases.vue') },
       {
         path: 'anonymization',
