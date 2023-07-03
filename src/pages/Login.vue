@@ -2,7 +2,6 @@
   <img src="~assets/blue-wave.svg" class="wave" alt="login-wave">
   <div class="row" style="height: 90vh">
     <div class="col-0 col-md-6 flex justify-center content-center">
-      <!-- <img src="~assets/login.svg" class="responsive" alt="login-image"> -->
     </div>
     <div class="col-12 col-md-6 flex content-center">
       <q-card style='width: 80%'>
@@ -45,8 +44,7 @@
 </template>
 
 <script>
-import { Notify } from 'quasar'
-import useAuthUser from 'src/composables/UseAuthUser'
+import { Notify, Loading } from 'quasar'
 import { defineComponent } from 'vue'
 import { mapActions, mapGetters } from 'vuex'
 
@@ -56,7 +54,7 @@ export default defineComponent({
     return {
       login: {
         email: 'convidado@example.com',
-        password: 'convidado123'
+        password: 'Convidado@123'
       },
       isPwd: true
     }
@@ -70,22 +68,34 @@ export default defineComponent({
   methods: {
     ...mapActions('auth', ['doLogin']),
     async submitLogin() {
+      Loading.show()
       try {
         await this.doLogin(this.login)
+        Loading.hide()
         const toPath = this.$route.query.to || '/client'
         this.$router.push(toPath)
-        Notify.create({
-          type: 'positive',
-          message: "user logged",
-          timeout: 1000
-        })
       } catch (err) {
-        console.log(err)
-        Notify.create({
-          type: 'negative',
-          message: "error",
-          timeout: 1000
-        })
+        Loading.hide()
+        const status = err.response.status
+        if (status === 404) {
+          Notify.create({
+            type: "negative",
+            message: "This user is invalid. Sign up first.",
+            timeout: 2000
+          });
+        } else if (status === 401) {
+          Notify.create({
+            type: "negative",
+            message: "Wrong e-mail or password.",
+            timeout: 2000
+          });
+        } else {
+          Notify.create({
+            type: "negative",
+            message: "Oops! Something went wrong. Please try again later.",
+            timeout: 2000,
+          });
+        }
       }
     }
   }
