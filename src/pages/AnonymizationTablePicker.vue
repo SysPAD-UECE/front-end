@@ -63,7 +63,6 @@ import { ref } from "vue";
 
 export default defineComponent({
   name: "anonymitazation-table-picker",
-
   computed: {
     ...mapGetters("auth", ["getToken"]),
   },
@@ -72,8 +71,12 @@ export default defineComponent({
       if (!this.selectedDatabaseId) {
         Notify.create({
           type: "negative",
-          message: "You need to select a database to procced",
-          timeout: 2000,
+          message: "You need to select a database to procced.",
+    
+          timeout: 5000,
+              actions: [
+                { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
+              ]
         });
         this.$router.push("/client/anonymization/databases");
       } else {
