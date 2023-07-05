@@ -241,8 +241,11 @@ export default defineComponent({
           Loading.hide()
           Notify.create({
             type: "positive",
-            message: "Database information changed successfully.",
-            timeout: 2000
+            message: "You changed the database informations successfully.",
+            timeout: 5000,
+            actions: [
+            { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
+          ]
           })
         })
         .catch(function (err) {
@@ -251,19 +254,9 @@ export default defineComponent({
            if (status === 401) {
           Notify.create({
             type: "negative",
-            message: "Unauthorized user.",
+            message: "Unauthorized Access: You are not authorized to perform this action.",
             timeout: 2000
           })
-        } else if (status === 409) {
-          Notify.create({
-            type: "negative",
-            message: "Your activation token is invalid! We have sent a new activation email to you. Please check your inbox.",
-            timeout: 5000,
-            actions: [
-            { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
-          ]
-          });
-          // this.resendEmail()
         } else {
           Notify.create({
             type: "negative",
@@ -273,12 +266,8 @@ export default defineComponent({
         }
         });
     },
-
-
-
     submitTestConnectionByURL() {
       if (!this.getToken) return;
-
       const data = {
         valid_database_id: this.database.databaseTypeName.id,
         name: this.database.name,
@@ -306,7 +295,7 @@ export default defineComponent({
           } else if (status === 409) {
             Notify.create({
               type: "negative",
-              message: "Your database is not connected. Try edit the informations",
+              message: "Failed trying to connect. Try changing database informations.",
               timeout: 5000,
               actions: [
                 { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
@@ -339,32 +328,32 @@ export default defineComponent({
           timeout: 1000
         })
       }).catch(function (err) {
-        Loading.hide()
-        const status = err.response.status
-        if (status === 401) {
-          Notify.create({
-            type: "negative",
-            message: "Your login token is invalid! Try again later.",
+          Loading.hide()
+          const status = err.response.status
+          if (status === 401) {
+            Notify.create({
+              type: "negative",
+              message: "Unauthorized Access: You are not authorized to perform this action.",
             timeout: 2000
-          });
-        } else if (status === 409) {
-          Notify.create({
-            type: "negative",
-            message: "Your database is not connected. Try edit the informations",
-            timeout: 5000,
-            actions: [
-              { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
-            ]
-          });
-        }
-        else {
-          Notify.create({
-            type: "negative",
-            message: "Oops! Something went wrong. Please try again later.",
-            timeout: 2000,
-          });
-        }
-      });
+            });
+          } else if (status === 409) {
+            Notify.create({
+              type: "negative",
+              message: "Failed trying to connect. Try changing database informations.",
+              timeout: 5000,
+              actions: [
+                { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
+              ]
+            });
+          }
+          else {
+            Notify.create({
+              type: "negative",
+              message: "Oops! Something went wrong. Please try again later.",
+              timeout: 2000,
+            });
+          }
+        });
     },
     submitAddDatabase() {
       if (!this.getToken) return
@@ -384,29 +373,34 @@ export default defineComponent({
           timeout: 1000
         })
         this.getDatabases()
-        // this.getDatabasesList()
-        // this.$router.push('/client/databases')
-
       }).catch(function (err) {
-        Loading.hide()
-        const status = err.response.status
-        if (status === 401) {
-          Notify.create({
-            type: "negative",
-            message: "Your login token is invalid! Try again later.",
+          Loading.hide()
+          const status = err.response.status
+          if (status === 401) {
+            Notify.create({
+              type: "negative",
+              message: "Unauthorized Access: You are not authorized to perform this action.",
             timeout: 2000
-          });
-        }
-        else {
-          Notify.create({
-            type: "negative",
-            message: "Oops! Something went wrong. Please try again later.",
-            timeout: 2000,
-          });
-        }
-      });
+            });
+          } else if (status === 409) {
+            Notify.create({
+              type: "negative",
+              message: "Database already exists.",
+              timeout: 5000,
+              actions: [
+                { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
+              ]
+            });
+          }
+          else {
+            Notify.create({
+              type: "negative",
+              message: "Oops! Something went wrong. Please try again later.",
+              timeout: 2000,
+            });
+          }
+        });
     },
-    //ok
     submitDelete(databaseId) {
       if (!this.getToken) return
       Dialog.create({
@@ -429,8 +423,14 @@ export default defineComponent({
           if (status === 401) {
             Notify.create({
               type: "negative",
-              message: "Your login token is invalid! Try again later.",
-              timeout: 2000
+              message: "Unauthorized Access: You are not authorized to perform this action.",
+            timeout: 2000
+            });
+          } else if (status === 404) {
+            Notify.create({
+              type: "negative",
+              message: "Database not found",
+            timeout: 2000
             });
           }
           else {
