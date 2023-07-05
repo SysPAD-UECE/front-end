@@ -22,22 +22,35 @@ The Web application is being built to be a easy way for the final user to use th
 
 ## Features
 - [x] User Login
-- [ ] Admin Page
-- [x] Database visualizer page
-- [ ] Anonymization configuration page
+- [x] Admin page
+- [x] User's databases list page
+- [x] Anonymization configuration page
+- [ ] Anonymization progress page 
 
+## Project screenshots 
 
+<i> Working on it </i>
 
 # Installing and running
 
-To run this front-end project, you'll need  [Git](git-csm.com) and [Quasar](https://quasar.dev/)
+## Technologies used
+- [Git](git-csm.com) - Git is a free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.
+- [Node](https://nodejs.org/en) v12.22.1 - Node.js is an open-source, cross-platform JavaScript runtime environment.
+- [Npm](https://www.npmjs.com/) v6.13.4 or [Yarn](https://yarnpkg.com/) v1.21.1
+- [Quasar](https://quasar.dev/) v2.12.0 - Open source programming language based on Vuejs.
+- [Vue](https://vuejs.org/) v3.0.0 -An approachable, performant and versatile framework for building web user interfaces.
+- [Vue-router](https://router.vuejs.org/) v4.0.0 - Expressive, configurable and convenient routing for Vue.js.
+- [Vuex](https://vuex.vuejs.org/) - Vuex is a state management pattern + library for Vue.js applications.
+- [Axios](https://axios-http.com/) v0.27.2 - Axios is a promise-based HTTP Client for node.js and the browser.
+
 
 ## Running
+To run this aplication you'll need Git, Node, Npm or Yarn, [Vue CLI Plugin](https://quasar.dev/start/vue-cli-plugin) and [Quasar CLI](https://quasar.dev/start/quick-start) installed.
 
 ```bash
 # Clone repository with the updated branch
 
-git clone --branch develop https://github.com/FRIDA-LACNIC-UECE/front-end
+git clone https://github.com/FRIDA-LACNIC-UECE/front-end
 
 # Select repository
 
@@ -56,7 +69,3 @@ quasar dev
 ```
 <br/>
 
-# Technologies used
-- [Git](git-csm.com) - Git is a free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.
-- [Quasar](https://quasar.dev/) - Open source programming language.
-- [Axios](https://axios-http.com/) - Axios is a promise-based HTTP Client for node.js and the browser.
