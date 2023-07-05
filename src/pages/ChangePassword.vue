@@ -100,9 +100,6 @@ export default defineComponent({
         new_password: this.password.newPassword,
         repeat_new_password: this.password.newPasswordRepeat,
       };
-      console.log("aqui")
-      console.log(data)
-      console.log(token)
       api
         .patch(`/password/redefine/${token}`, data)
         .then((response) => {

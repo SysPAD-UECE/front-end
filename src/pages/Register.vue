@@ -76,14 +76,27 @@ export default defineComponent({
           message: res.data.message,
           timeout: 1000
         })
-      }).catch((err) => {
-        console.log(err)
-        Notify.create({
-          type: 'negative',
-          message: err.response.data.error,
-          timeout: 1000
-        })
-      })
+      }).catch(function (err) {
+          Loading.hide()
+          const status = err.response.status
+          if (status === 409) {
+            Notify.create({
+              type: "negative",
+              message: "Username or e-mail already in use.",
+              timeout: 5000,
+              actions: [
+                { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
+              ]
+            });
+          }
+          else {
+            Notify.create({
+              type: "negative",
+              message: "Oops! Something went wrong. Please try again later.",
+              timeout: 2000,
+            });
+          }
+        });
     }
   }
 })
