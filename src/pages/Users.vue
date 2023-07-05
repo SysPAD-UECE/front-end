@@ -90,13 +90,30 @@ export default defineComponent({
             timeout: 1000
           })
           this.users = this.users.filter(element => element.id !== id)
-        }).catch(err => {
-          Notify.create({
-            type: 'negative',
-            message: err.response.data.error,
-            timeout: 1000
-          })
-        })
+        }).catch(function (err) {
+          Loading.hide()
+          const status = err.response.status
+          if (status === 401) {
+            Notify.create({
+              type: "negative",
+              message: "Unauthorized Access: You are not authorized to perform this action.",
+            timeout: 2000
+            });
+          } else if (status === 404) {
+            Notify.create({
+              type: "negative",
+              message: "User not found",
+            timeout: 2000
+            });
+          }
+          else {
+            Notify.create({
+              type: "negative",
+              message: "Oops! Something went wrong. Please try again later.",
+              timeout: 2000,
+            });
+          }
+        });
       })
     }
   },
