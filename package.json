@@ -1,7 +1,7 @@
 {
   "name": "frida",
   "version": "0.0.1",
-  "description": "A Quasar Project",
+  "description": "Data Protection System based on Anonymization Techniques and aware of Privacy Laws.",
   "productName": "Frida App",
   "author": "LARCES",
   "private": true,
