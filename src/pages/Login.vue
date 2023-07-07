@@ -75,12 +75,13 @@ export default defineComponent({
         const toPath = this.$route.query.to || '/client'
         this.$router.push(toPath)
       } catch (err) {
+        console.log(err.response.data.message)
         Loading.hide()
         const status = err.response.status
         if (status === 404) {
           Notify.create({
             type: "negative",
-            message: "This user is invalid. Sign up first.",
+            message: this.$t(err.response.data.message),
             timeout: 2000
           });
         } else if (status === 401) {
