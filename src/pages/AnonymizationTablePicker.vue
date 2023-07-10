@@ -72,7 +72,7 @@ export default defineComponent({
         Notify.create({
           type: "negative",
           message: "You need to select a database to procced.",
-    
+
           timeout: 5000,
               actions: [
                 { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
@@ -91,7 +91,6 @@ export default defineComponent({
     getTableList() {
       if (!this.getToken) return;
       Loading.show();
-
       api
         .get(`database/table_names/${this.selectedDatabaseId}`, {
           headers: {
@@ -103,14 +102,6 @@ export default defineComponent({
           this.tableList = response.data.table_names;
           Loading.hide();
         })
-        .catch((err) => {
-          Loading.hide();
-          Notify.create({
-          type: 'negative',
-          message: 'Error retrieving table list',
-          timeout: 1000
-        })
-        });
     },
     getAnonymizationList() {
       if (!this.getToken) return;
@@ -126,13 +117,6 @@ export default defineComponent({
           const resp = response.data.items;
           this.anonymizationTechniquesName = resp.map((resp) => resp.name);
         })
-        .catch((err) => {
-          Notify.create({
-          type: 'negative',
-          message: 'Error retrieving anonymization data',
-          timeout: 1000
-        })
-        });
     },
     getTableColumnsInfo() {
       if (!this.getToken) return;
@@ -153,14 +137,6 @@ export default defineComponent({
           this.dBColumnsInfo.forEach((dic) => (dic["anonymization"] = null));
           this.columnNamesList = this.dBColumnsInfo.map((dic) => dic.name);
         })
-        .catch((err) => {
-          Loading.hide()
-          Notify.create({
-          type: 'negative',
-          message: 'Error retrieving columns data',
-          timeout: 1000
-        })
-        });
     },
     async recordAllColumns() {
       try {
@@ -214,13 +190,12 @@ export default defineComponent({
       } catch (error) {
         Notify.create({
           type: 'negative',
-          message: 'Error protecting data',
-          timeout: 1500
+          message: 'An error ocurred. Please try again later.',
+          timeout: 2000
         })
       }
     },
     async recordColumn(columns, id) {
-
       const data = {
         database_id: parseInt(this.selectedDatabaseId),
         anonymization_type_id: id,
@@ -245,7 +220,6 @@ export default defineComponent({
       });
     },
     async encryptRecordedData() {
-
       const data = {table_name: this.tableSelect}
       return new Promise((resolve, reject) => {
         api
@@ -268,7 +242,6 @@ export default defineComponent({
       });
     },
     async anonymizeRecordedData() {
-
       const data = {table_name: this.tableSelect}
       return new Promise((resolve, reject) => {
         api
