@@ -70,52 +70,51 @@
 <script>
 import { Loading, Notify } from "quasar";
 import { defineComponent, ref } from "vue";
-import { mapActions, mapGetters } from "vuex";
+import { mapGetters } from "vuex";
 import { api } from 'src/boot/axios'
 
 
 export default defineComponent({
-  name: "Login",
+  name: "forgot-password",
   data() {
     return {
       pausedFor30Seconds: true,
       emailSent: false,
-      email: ref(null),
-    };
+      email: ref(null)
+    }
   },
   computed: {
     ...mapGetters("auth", ["getToken"]),
   },
   methods: {
     postForgotPassword() {
-      Loading.show()
-      const data = {
-        email: this.email
-      }
       this.pausedFor30Seconds = true;
       setTimeout(() => (this.pausedFor30Seconds = false), 30000);
+
+      const data = { email: this.email }
+
+      Loading.show()
+
       api
-        .post("/password/forgot", data, {
-          headers: {
-            Authorization: `Bearer ${this.getToken}`,
-          },
-        })
+        .post("/password/forgot", data)
         .then((response) => {
           Loading.hide()
           this.emailSent = true;
         })
         .catch(function (err) {
           Loading.hide()
-          const status = err.response.status
           // this.$router.push({ name: 'login' })
-          if (status === 404) {
+          const status = err.response.status
+
+          if (status === 404 || status === 409) {
           Notify.create({
             type: "negative",
             message: "This user is invalid. Try again later.",
             timeout: 2000
           });
           this.resendEmail()
-        } else {
+        }
+         else {
           Notify.create({
             type: "negative",
             message: "Oops! Something went wrong. Please try again later.",
@@ -127,22 +126,6 @@ export default defineComponent({
     changeEmail() {
       this.emailSent = false;
       this.pausedFor30Seconds = true;
-
-      try {
-        this.$router.push();
-        Notify.create({
-          type: "positive",
-          message: "Check your email",
-          timeout: 1000,
-        });
-      } catch (err) {
-        console.log(err);
-        Notify.create({
-          type: "negative",
-          message: "Try again later",
-          timeout: 1000,
-        });
-      }
     },
   },
 });
