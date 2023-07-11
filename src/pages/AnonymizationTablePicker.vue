@@ -10,7 +10,7 @@
         />
       </q-breadcrumbs>
     </q-card-section>
-
+    <q-card-section><TablesTable/></q-card-section>
     <q-card-section>
       <div class="q-px-md">Select the table you want to anonymize</div>
       <q-card-section class="row justify-between">
@@ -60,9 +60,13 @@ import { api } from "src/boot/axios";
 import { mapGetters } from "vuex";
 import { Notify, Loading } from "quasar";
 import { ref } from "vue";
+import TablesTable from 'src/components/TablesTable.vue'
 
 export default defineComponent({
   name: "anonymitazation-table-picker",
+  components: {
+    TablesTable
+  },
   computed: {
     ...mapGetters("auth", ["getToken"]),
   },
@@ -297,7 +301,7 @@ export default defineComponent({
   },
   created() {
     this.selectedDatabaseId = this.$route.params.data;
-    this.checkSelectedDatabase();
+    // this.checkSelectedDatabase();
 
   },
 });
