@@ -1,9 +1,107 @@
 <template>
-    <h1>Teste</h1>
+  <q-table
+    title="Tables"
+    :rows="tablesList"
+    :columns="tablesColumns"
+    separator="cell"
+  >
+  <template name="props-anonymized" v-slot:body-cell-anonymized="props">
+      <q-td :props="props">
+        <span :class="{'text-red': !props.row.anonymized, 'text-green-7': props.row.anonymized}">
+          {{ props.row.anonymized ? 'Anonymized' : 'Not Anonymized' }}
+        </span>
+      </q-td>
+    </template>
+    <template name="props-encrypted" v-slot:body-cell-encrypted="props">
+      <q-td :props="props">
+        <span :class="{'text-red': !props.row.encrypted, 'text-green-7': props.row.encrypted}">
+          {{ props.row.encrypted ? 'Encrypted' : 'Not Encrypted' }}
+        </span>
+      </q-td>
+    </template>
+    <template name="props-action" v-slot:body-cell-action="props">
+      <q-td :props="props">
+          <q-btn v-if="!props.row.encrypted && !props.row.anonymized" label="Send to Anonymization"  size="sm" color="primary"></q-btn>
+          <q-btn v-else label="See Progress" size="sm" class="q-ml-sm" flat dense @click="send(props.row.id)"></q-btn>
+        </q-td>
+    </template>
+  </q-table>
 </template>
 
 <script>
+const tablesColumns = [
+  {
+    label: "ID",
+    field: "id",
+    align: "center"
+  },
+  {
+    label: "Name",
+    field: "name",
+    align: "center"
+  },
+  {
+    name: "encrypted",
+    label: "Encryptation Status",
+    field: "encrypted",
+    align: "center"
+  },
+  {
+    name: "anonymized",
+    label: "Anonymization Status",
+    field: "anonymized",
+    align: "center"
+  },
+  {
+    name: 'action',
+    label: "Action",
+    align: "center"
+  }
+]
+
+import { api } from "src/boot/axios";
+import { mapGetters } from "vuex";
+import { Loading } from "quasar";
+
 export default {
-  name: 'TablesTable'
-}
+  name: "TablesTable",
+  props: ["databaseID"],
+  computed: {
+    ...mapGetters("auth", ["getToken"]),
+  },
+  methods: {
+    getTableList() {
+      if (!this.getToken) return;
+      Loading.show();
+      api
+        .get(`database/${this.databaseID}/table`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.getToken}`,
+          },
+        })
+        .then((response) => {
+          Loading.hide()
+          this.tablesList = response.data.items
+          console.log(this.tablesList)
+        })
+    },
+  },
+  data () {
+    return {
+      tablesColumns,
+      tablesList: [],
+    };
+  },
+  // watch: {
+  //   tablesList() {
+  //     this.$nextTick(() => {
+  //       this.$refs.table.refresh();
+  //     });
+  //   },
+  // },
+  created() {
+    this.getTableList();
+  },
+};
 </script>

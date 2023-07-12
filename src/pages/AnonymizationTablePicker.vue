@@ -10,27 +10,7 @@
         />
       </q-breadcrumbs>
     </q-card-section>
-    <q-card-section><TablesTable/></q-card-section>
-    <q-card-section>
-      <div class="q-px-md">Select the table you want to anonymize</div>
-      <q-card-section class="row justify-between">
-        <q-select
-          class="col q-pr-md"
-          outlined
-          v-model="tableSelect"
-          :options="tableList"
-          :dense="true"
-          :options-dense="true"
-        ></q-select>
-        <div>
-          <q-btn
-            color="primary col-4"
-            label="Ok"
-            @click="getTableColumnsInfo()"
-          />
-        </div>
-      </q-card-section>
-    </q-card-section>
+    <q-card-section><TablesTable :databaseID=this.selectedDatabaseId /></q-card-section>
 
     <q-card-section class="columns-table">
       <q-table class="custom-table" :rows="dBColumnsInfo" :columns="columns" row-key="column">
