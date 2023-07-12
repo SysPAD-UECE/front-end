@@ -40,7 +40,7 @@ import { api } from "src/boot/axios";
 import { mapGetters } from "vuex";
 import { Notify, Loading } from "quasar";
 import { ref } from "vue";
-import TablesTable from 'src/components/TablesTable.vue'
+import TablesTable from 'src/components/anonymization/TablesTable.vue'
 
 export default defineComponent({
   name: "anonymitazation-table-picker",
