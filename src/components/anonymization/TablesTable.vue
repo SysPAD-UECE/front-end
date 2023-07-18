@@ -1,31 +1,34 @@
 <template>
-  <q-table
-    title="Tables"
-    :rows="tablesList"
-    :columns="tablesColumns"
-    separator="cell"
-  >
-  <template name="props-anonymized" v-slot:body-cell-anonymized="props">
-      <q-td :props="props">
-        <span :class="{'text-red': !props.row.anonymized, 'text-green-7': props.row.anonymized}">
-          {{ props.row.anonymized ? 'Anonymized' : 'Not Anonymized' }}
-        </span>
-      </q-td>
-    </template>
-    <template name="props-encrypted" v-slot:body-cell-encrypted="props">
-      <q-td :props="props">
-        <span :class="{'text-red': !props.row.encrypted, 'text-green-7': props.row.encrypted}">
-          {{ props.row.encrypted ? 'Encrypted' : 'Not Encrypted' }}
-        </span>
-      </q-td>
-    </template>
-    <template name="props-action" v-slot:body-cell-action="props">
-      <q-td :props="props">
-          <q-btn v-if="!props.row.encrypted && !props.row.anonymized" label="Send to Anonymization"  size="sm" color="primary"></q-btn>
-          <q-btn v-else label="See Progress" size="sm" class="q-ml-sm" flat dense @click="send(props.row.id)"></q-btn>
+  <q-card class="q-pb-lg q-pt-sm">
+    <q-table
+      title="Tables"
+      :rows="tablesList"
+      :columns="tablesColumns"
+      separator="none"
+      hide-pagination
+    >
+    <template name="props-anonymized" v-slot:body-cell-anonymized="props">
+        <q-td :props="props">
+          <span :class="{'text-red': !props.row.anonymized, 'text-green-7': props.row.anonymized}">
+            {{ props.row.anonymized ? 'Anonymized' : 'Not Anonymized' }}
+          </span>
         </q-td>
-    </template>
-  </q-table>
+      </template>
+      <template name="props-encrypted" v-slot:body-cell-encrypted="props">
+        <q-td :props="props">
+          <span :class="{'text-red': !props.row.encrypted, 'text-green-7': props.row.encrypted}">
+            {{ props.row.encrypted ? 'Encrypted' : 'Not Encrypted' }}
+          </span>
+        </q-td>
+      </template>
+      <template name="props-action" v-slot:body-cell-action="props">
+        <q-td :props="props">
+            <q-btn v-if="!props.row.encrypted && !props.row.anonymized" label="Send to Anonymization"  size="sm" color="primary"></q-btn>
+            <q-btn v-else label="Anonymization" size="sm" class="q-ml-sm" flat dense @click="send(props.row.id)"></q-btn>
+          </q-td>
+      </template>
+    </q-table>
+  </q-card>
 </template>
 
 <script>
@@ -54,7 +57,6 @@ const tablesColumns = [
   },
   {
     name: 'action',
-    label: "Action",
     align: "center"
   }
 ]
@@ -64,7 +66,7 @@ import { mapGetters } from "vuex";
 import { Loading } from "quasar";
 
 export default {
-  name: "TablesTable",
+  name: "tablesTable",
   props: ["databaseID"],
   computed: {
     ...mapGetters("auth", ["getToken"]),
