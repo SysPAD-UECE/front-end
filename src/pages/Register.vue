@@ -76,6 +76,7 @@ export default defineComponent({
           message: res.data.message,
           timeout: 1000
         })
+        this.$router.push('/user-activation')
       }).catch(function (err) {
           Loading.hide()
           const status = err.response.status
