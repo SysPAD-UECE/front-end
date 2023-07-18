@@ -86,7 +86,8 @@ export default defineComponent({
         }).then(response => {
           Notify.create({
             type: 'positive',
-            message: response.data.message,
+            message: 'user deleted',
+
             timeout: 1000
           })
           this.users = this.users.filter(element => element.id !== id)

@@ -75,6 +75,7 @@ export default defineComponent({
           message: 'user created',
           timeout: 1000
         })
+
       }).catch(function (err) {
           Loading.hide()
           const status = err.response.status
@@ -96,6 +97,7 @@ export default defineComponent({
             });
           }
         });
+
     }
   }
 })

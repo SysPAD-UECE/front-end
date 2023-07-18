@@ -22,10 +22,10 @@
                 val => !!val || 'Name is empty'
               ]">
             </q-input>
-            <q-input label="Email" v-model="register.email" :rules="[
-                val => !!val || 'Email is empty'
-              ]">
+            <q-input label="Email" v-model="register.email" :rules="[val => !!val || 'Email is empty', isValidEmail]" hint="Enter valid email">
             </q-input>
+
+
             <q-input label="Password" :type="isPwd ? 'password' : 'text'" v-model="register.password"
               :rules="[val => (val && val.length >= 6) || 'Password is required and 6 characters']">
               <template v-slot:append>
@@ -64,6 +64,13 @@ export default defineComponent({
     }
   },
   methods: {
+    isValidEmail(val) {
+      const emailPattern = /^(?=[a-zA-Z0-9@._%+-]{6,254}$)[a-zA-Z0-9._%+-]{1,64}@(?:[a-zA-Z0-9-]{1,63}\.){1,8}[a-zA-Z]{2,63}$/;
+      return emailPattern.test(val) || 'Invalid email';
+    },
+    reset() {
+      this.$refs.input.resetValidation()
+    },
     submitRegister() {
       const data = {
         username: this.register.username,
