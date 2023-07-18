@@ -10,27 +10,10 @@
         />
       </q-breadcrumbs>
     </q-card-section>
-    <q-card-section><TablesTable :databaseID=this.selectedDatabaseId /></q-card-section>
+    <q-card-section><tablesTable :databaseID=this.selectedDatabaseId /></q-card-section>
+    
 
-    <q-card-section class="columns-table">
-      <q-table class="custom-table" :rows="dBColumnsInfo" :columns="columns" row-key="column">
-        <template v-slot:body-cell-anonymization="props">
-          <q-select
-            v-model="props.row.anonymization"
-            :options="anonymizationTechniquesName"
-            @input="
-              updateAnonymizationTechnique(
-                props.row,
-                props.row.anonymizationTechinique
-              )
-            "
-          />
-        </template>
-      </q-table>
-      <div class="q-mt-md row">
-      <q-btn  label="Protect Data" color="primary" @click="this.recordAllColumns()"></q-btn>
-    </div>
-    </q-card-section>
+    
   </q-card>
 </template>
 
@@ -40,12 +23,12 @@ import { api } from "src/boot/axios";
 import { mapGetters } from "vuex";
 import { Notify, Loading } from "quasar";
 import { ref } from "vue";
-import TablesTable from 'src/components/anonymization/TablesTable.vue'
+import tablesTable from 'src/components/anonymization/TablesTable.vue'
 
 export default defineComponent({
   name: "anonymitazation-table-picker",
   components: {
-    TablesTable
+    tablesTable
   },
   computed: {
     ...mapGetters("auth", ["getToken"]),

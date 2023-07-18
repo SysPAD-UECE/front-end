@@ -6,6 +6,9 @@
       :columns="tablesColumns"
       separator="none"
       hide-pagination
+      row-key="id"
+      selection="single"
+      v-model:selected="selected"
     >
     <template name="props-anonymized" v-slot:body-cell-anonymized="props">
         <q-td :props="props">
@@ -29,11 +32,13 @@
       </template>
     </q-table>
   </q-card>
+  <q-card><columnsTable :databaseID=this.databaseID /></q-card>
 </template>
 
 <script>
 const tablesColumns = [
   {
+    name: "id",
     label: "ID",
     field: "id",
     align: "center"
@@ -64,10 +69,14 @@ const tablesColumns = [
 import { api } from "src/boot/axios";
 import { mapGetters } from "vuex";
 import { Loading } from "quasar";
+import columnsTable from 'src/components/anonymization/ColumnsTable.vue'
 
 export default {
   name: "tablesTable",
   props: ["databaseID"],
+  components: {
+    columnsTable
+  },
   computed: {
     ...mapGetters("auth", ["getToken"]),
   },
@@ -90,7 +99,9 @@ export default {
     },
   },
   data () {
+    const selected = ref([])
     return {
+      selected,
       tablesColumns,
       tablesList: [],
     };
