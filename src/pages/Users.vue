@@ -1,7 +1,7 @@
 <template>
   <div class="q-pa-md" v-show='!this.$q.loading.isActive'>
     <q-card-section>
-      <div class="text-h6">Administrator Panel</div>
+      <div class="text-h6">Admin Panel</div>
     </q-card-section>
     <q-card>
       <q-card-section>
@@ -97,13 +97,13 @@ export default defineComponent({
             Notify.create({
               type: "negative",
               message: "Unauthorized Access: You are not authorized to perform this action.",
-            timeout: 2000
+              timeout: 2000
             });
           } else if (status === 404) {
             Notify.create({
               type: "negative",
               message: "User not found",
-            timeout: 2000
+              timeout: 2000
             });
           }
           else {
