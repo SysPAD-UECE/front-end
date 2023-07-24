@@ -20,12 +20,16 @@
           <template name="props-show-password" v-slot:body-cell-password="props">
             <q-td :props="props">
               <div class="absolute-center q-mr-md">
-                {{ props.row.showPassword ? (props.row.password ? props.row.password : 'EMPTY') : '*******' }}
-                <q-btn color="grey" size="sm" class="q-ml-sm" flat dense v-if="props.row.password !== null"
-                  v-bind:icon="props.row.showPassword ? 'visibility_off' : 'visibility'"
-                  @click="toggleShowPassword(props.row)" />
-                <q-tooltip>Show Password</q-tooltip>
-              </div>
+    <span v-if="props.row.showPassword">
+      <span v-if="props.row.password">{{ props.row.password }}</span>
+      <span v-else style="color: red;">EMPTY</span>
+    </span>
+    <span v-else>*******</span>
+    <q-btn color="grey" size="sm" class="q-ml-sm" flat dense v-if="props.row.password !== null"
+      v-bind:icon="props.row.showPassword ? 'visibility_off' : 'visibility'"
+      @click="toggleShowPassword(props.row)" />
+    <q-tooltip>Show Password</q-tooltip>
+  </div>
             </q-td>
           </template>
           <template name="props-name" v-slot:body-cell-name="props">
