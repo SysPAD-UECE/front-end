@@ -3,14 +3,14 @@
     <q-header elevated>
       <div id="app">
         <auto-logout>
-          <div v-if="warningZone">are you still here?</div>
+          <div v-if="warningZone">Are you still here?</div>
         </auto-logout>
       </div>
       <q-toolbar>
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
-          Data Protection System
+          SysPAD
         </q-toolbar-title>
 
         <q-btn flat dense round icon="home" aria-label="HomePage" to="/client/home">
@@ -23,10 +23,10 @@
           to="/admin">
           <q-tooltip>Admin</q-tooltip>
         </q-btn>
-        <q-btn flat dense round color="white" stack icon="manage_accounts" aria-label="Account" v-if="isAuthenticated">
+        <!-- <q-btn flat dense round color="white" stack icon="manage_accounts" aria-label="Account" v-if="isAuthenticated">
           {{ getMe.name }}
           <q-tooltip>Account</q-tooltip>
-        </q-btn>
+        </q-btn> -->
 
         <q-btn flat dense round icon="logout" aria-label="Log out" v-if="isAuthenticated" @click="logout">
           <q-tooltip>Logout</q-tooltip>
@@ -41,14 +41,14 @@
           Options
         </q-item-label>
 
-        <q-item clickable v-ripple to="/client/home" active-class="q-item-no-link-highlighting">
+        <!-- <q-item clickable v-ripple to="/client/home" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
             <q-avatar icon="home" />
           </q-item-section>
           <q-item-section>
             Home
           </q-item-section>
-        </q-item>
+        </q-item> -->
 
         <q-item clickable v-ripple to="/client/databases" active-class="q-item-no-link-highlighting">
           <q-item-section avatar>
@@ -142,7 +142,7 @@ export default defineComponent({
     },
     setTimers: function () {
       this.warningTimer = setTimeout(this.warningMessage, 50 * 1000);
-      this.logoutTimer = setTimeout(this.logoutUser, 94 * 1000);
+      this.logoutTimer = setTimeout(this.logoutUser, 28880 * 1000);
 
       this.warningZone = false;
 

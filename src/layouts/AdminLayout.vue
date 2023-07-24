@@ -5,7 +5,7 @@
         <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
 
         <q-toolbar-title>
-          Data Protection System
+          SysPAD
         </q-toolbar-title>
         <q-btn flat dense round icon="home" aria-label="HomePage" to="/client/home">
           <q-tooltip>Home</q-tooltip>
@@ -17,11 +17,7 @@
           to="/admin">
           <q-tooltip>Admin</q-tooltip>
         </q-btn>
-        <q-btn flat dense round color="white" stack icon="manage_accounts" aria-label="Account" v-if="isAuthenticated"
-          to="/client">
-          {{ getMe.name }}
-          <q-tooltip>Account</q-tooltip>
-        </q-btn>
+        
 
         <q-btn flat dense round icon="logout" aria-label="Log out" v-if="isAuthenticated" @click="logout">
           <q-tooltip>Logout</q-tooltip>
