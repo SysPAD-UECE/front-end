@@ -1,271 +1,107 @@
 <template>
-  <q-card>
-    <q-card-section class="q-pa-md q-gutter-sm">
-      <q-breadcrumbs>
-        <q-breadcrumbs-el icon="home" to="/client/home" />
-        <q-breadcrumbs-el
-          label="Anonymization"
-          icon="hotel_class"
-          to="/client/anonymization"
-        />
-      </q-breadcrumbs>
-    </q-card-section>
-    <q-card-section><tablesTable :databaseID=this.selectedDatabaseId /></q-card-section>
-    
-
-    
+  <q-card class="q-pb-lg q-pt-sm">
+    <q-table
+      title="Tables"
+      :rows="tablesList"
+      :columns="tablesColumns"
+      separator="none"
+      hide-pagination
+    >
+    <template name="props-anonymized" v-slot:body-cell-anonymized="props">
+        <q-td :props="props">
+          <span :class="{'text-red': !props.row.anonymized, 'text-green-7': props.row.anonymized}">
+            {{ props.row.anonymized ? 'Anonymized' : 'Not Anonymized' }}
+          </span>
+        </q-td>
+      </template>
+      <template name="props-encrypted" v-slot:body-cell-encrypted="props">
+        <q-td :props="props">
+          <span :class="{'text-red': !props.row.encrypted, 'text-green-7': props.row.encrypted}">
+            {{ props.row.encrypted ? 'Encrypted' : 'Not Encrypted' }}
+          </span>
+        </q-td>
+      </template>
+      <template name="props-action" v-slot:body-cell-action="props">
+        <q-td :props="props">
+            <q-btn v-if="!props.row.encrypted && !props.row.anonymized" :disabled="props.row.encrypted || props.row.anonymized" label="Send to Anonymization"  size="sm" color="primary"></q-btn>
+            <q-btn v-else label="Send to Anonymization"  size="sm" color="primary" @click="send(props.row.id)"></q-btn>
+          </q-td>
+      </template>
+    </q-table>
   </q-card>
 </template>
 
 <script>
-import { defineComponent } from "vue";
+const tablesColumns = [
+  {
+    name: "id",
+    label: "ID",
+    field: "id",
+    align: "center"
+  },
+  {
+    label: "Name",
+    field: "name",
+    align: "center"
+  },
+  {
+    name: "encrypted",
+    label: "Encryptation Status",
+    field: "encrypted",
+    align: "center"
+  },
+  {
+    name: "anonymized",
+    label: "Anonymization Status",
+    field: "anonymizated",
+    align: "center"
+  },
+  {
+    name: 'action',
+    align: "center"
+  }
+]
+import { defineComponent,ref } from "vue";
 import { api } from "src/boot/axios";
 import { mapGetters } from "vuex";
-import { Notify, Loading } from "quasar";
-import { ref } from "vue";
-import tablesTable from 'src/components/anonymization/TablesTable.vue'
+import { Loading } from "quasar";
 
 export default defineComponent({
   name: "anonymitazation-table-picker",
-  components: {
-    tablesTable
-  },
   computed: {
     ...mapGetters("auth", ["getToken"]),
   },
   methods: {
-    checkSelectedDatabase() {
-      if (!this.selectedDatabaseId) {
-        Notify.create({
-          type: "negative",
-          message: "You need to select a database to procced.",
-
-          timeout: 5000,
-              actions: [
-                { label: 'OK', color: 'yellow', handler: () => { /* ... */ } }
-              ]
-        });
-        this.$router.push("/client/anonymization/databases");
-      } else {
-        this.getTableList();
-        this.getAnonymizationList();
-      }
-    },
-    updateAnonymizationTechnique(column, anonymization) {
-      column.anonymization = anonymization;
-      console.log(this.dBColumnsInfo);
-    },
+    
     getTableList() {
       if (!this.getToken) return;
       Loading.show();
       api
-        .get(`database/table_names/${this.selectedDatabaseId}`, {
+        .get(`database/${this.databaseID}/table`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${this.getToken}`,
           },
         })
         .then((response) => {
-          this.tableList = response.data.table_names;
-          Loading.hide();
+          Loading.hide()
+          this.tablesList = response.data.items
+          console.log(response.data)
         })
-    },
-    getAnonymizationList() {
-      if (!this.getToken) return;
-      api
-        .get("./anonymization_type", {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${this.getToken}`,
-          },
-        })
-        .then((response) => {
-          this.anonymizationTechniques = response.data;
-          const resp = response.data.items;
-          this.anonymizationTechniquesName = resp.map((resp) => resp.name);
-        })
-    },
-    getTableColumnsInfo() {
-      if (!this.getToken) return;
-      Loading.show();
-      api
-        .get(
-          `database/table_columns/${this.selectedDatabaseId}?table_name=${this.tableSelect}`,
-          {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${this.getToken}`,
-            },
-          }
-        )
-        .then((response) => {
-          Loading.hide();
-          this.dBColumnsInfo = response.data.table_columns;
-          this.dBColumnsInfo.forEach((dic) => (dic["anonymization"] = null));
-          this.columnNamesList = this.dBColumnsInfo.map((dic) => dic.name);
-        })
-    },
-    async recordAllColumns() {
-      try {
-
-        let promises = [];
-        for (var i = 1; i <= this.anonymizationTechniquesName.length; i++) {
-          const item = this.anonymizationTechniques.items.find(
-            (item) => item.id === i
-          );
-          var columnsToRecord = this.dBColumnsInfo
-            .filter((d) => d.anonymization === item.name)
-            .map((d) => d.name);
-          promises.push(this.recordColumn(columnsToRecord, i));
-        }
-
-        const results = await Promise.allSettled(promises);
-
-        results.forEach((result) => {
-          if (result.status != "fulfilled") {
-            throw new Error(
-              "Async function error:  " + result.reason
-            );
-          }
-        });
-
-        const encryptResponse = await this.encryptRecordedData();
-        const encryptError =
-          encryptResponse.status !== 200
-            ? encryptResponse.data
-            : null;
-        if (encryptError) {
-          throw new Error(`${encryptError}`);
-        }
-
-        const anonymizeResponse = await this.anonymizeRecordedData();
-        const anonymizeError =
-          anonymizeResponse.status !== 200
-            ? anonymizeResponse.data
-            : null;
-
-        if (anonymizeError) {
-          throw new Error(`${anonymizeError}`);
-        }
-
-        Notify.create({
-          type: "positive",
-          message: "Your data is protected",
-          timeout: 2000,
-        });
-
-      } catch (error) {
-        Notify.create({
-          type: 'negative',
-          message: 'An error ocurred. Please try again later.',
-          timeout: 2000
-        })
-      }
-    },
-    async recordColumn(columns, id) {
-      const data = {
-        database_id: parseInt(this.selectedDatabaseId),
-        anonymization_type_id: id,
-        table_name: this.tableSelect,
-        columns: columns,
-      };
-
-      return new Promise((resolve, reject) => {
-        api
-          .post("/anonymization_record", data, {
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${this.getToken}`,
-            },
-          })
-          .then((response) => {
-            resolve(response.data);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
-    },
-    async encryptRecordedData() {
-      const data = {table_name: this.tableSelect}
-      return new Promise((resolve, reject) => {
-        api
-          .post(
-            `/encryption/database/${this.selectedDatabaseId}`,
-            data,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${this.getToken}`,
-              },
-            }
-          )
-          .then((response) => {
-            resolve(response.data);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
-    },
-    async anonymizeRecordedData() {
-      const data = {table_name: this.tableSelect}
-      return new Promise((resolve, reject) => {
-        api
-          .post(
-            `/anonymization/database/${this.selectedDatabaseId}`,
-            data,
-            {
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${this.getToken}`,
-              },
-            }
-          )
-          .then((response) => {
-            resolve(response.data);
-          })
-          .catch((error) => {
-            reject(error);
-          });
-      });
     },
   },
-  data() {
-    const columns = [
-      {
-        label: "Column",
-        field: "name",
-        name: "name",
-        align: "left",
-      },
-      {
-        label: "Data Type",
-        field: "type",
-        name: "type",
-        align: "left",
-      },
-      {
-        label: "Select Anonymization",
-        field: "anonymization",
-        name: "anonymization",
-        align: "left",
-        format: (value) => value,
-      },
-    ];
+  data () {
+    const selected = ref([])
     return {
-      selectedDatabaseId: "",
-      tableList: [],
-      tableSelect: ref(null),
-      columns,
-      dBColumnsInfo: [],
-      rowsToAnonymize: [],
+      tablesColumns,
+      selected,
+      tablesList: []
     };
   },
   created() {
-    this.selectedDatabaseId = this.$route.params.data;
-    // this.checkSelectedDatabase();
-
-  },
+    this.databaseID = this.$route.params.data;
+    this.getTableList();
+  }
+  
 });
 </script>

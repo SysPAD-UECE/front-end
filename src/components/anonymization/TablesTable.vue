@@ -68,7 +68,7 @@ const tablesColumns = [
 
 import { api } from "src/boot/axios";
 import { mapGetters } from "vuex";
-import { Loading } from "quasar";
+import { Loading, ref } from "quasar";
 import columnsTable from 'src/components/anonymization/ColumnsTable.vue'
 
 export default {
@@ -114,6 +114,7 @@ export default {
   //   },
   // },
   created() {
+    this.databaseID = this.$route.params.data;
     this.getTableList();
   },
 };
