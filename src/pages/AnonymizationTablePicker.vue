@@ -28,6 +28,9 @@
           </q-td>
       </template>
     </q-table>
+    <q-card-section class="q-mt-md" >
+      <q-linear-progress :value="anonymizationProgress" :max="100" />
+</q-card-section>
   </q-card>
 </template>
 
@@ -89,18 +92,38 @@ export default defineComponent({
           console.log(response.data)
         })
     },
+
+    anonymizationProgressUpdate(){
+      api
+        .get(`anonymization/database/${this.databaseID}/table/${1}/progress`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.getToken}`,
+          },
+        })
+        .then((response) => {
+          // this.anonymizationProgress = response.data.progress
+          console.log(response.data)
+        })
+    }
   },
   data () {
     const selected = ref([])
     return {
       tablesColumns,
       selected,
-      tablesList: []
+      tablesList: [],
+      anonymizationProgress: 0
     };
   },
   created() {
     this.databaseID = this.$route.params.data;
     this.getTableList();
+    // this.anonymizationProgressUpdate();
+    // this.updateInterval = setInterval(this.anonymizationProgressUpdate, 1000)
+  },
+  beforeDestroy() {
+    clearInterval(this.updateInterval)
   }
   
 });
