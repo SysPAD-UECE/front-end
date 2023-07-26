@@ -23,7 +23,8 @@ const routes = [
         path: 'anonymization',
         children: [
           { path: 'databases', name: 'anonymization-database-picker', component: () => import('src/pages/AnonymizationDatabasePicker.vue') },
-          { path: 'tables', name: 'anonymitazation-table-picker', component: () => import('src/pages/AnonymizationTablePicker.vue'), }
+          { path: 'tables', name: 'anonymitazation-table-picker', component: () => import('src/pages/AnonymizationTablePicker.vue'), },
+          { path: 'columns', name:'columnsTable' ,component: () => import('src/pages/ColumnsTable.vue'), }
         ],
         redirect: './client/anonymization/databases'
       },

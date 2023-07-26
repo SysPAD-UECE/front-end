@@ -44,7 +44,7 @@
             label="Set Anonymization"
             size="sm"
             color="primary"
-            @click="send(props.row.id)"
+            @click="setAnonymization(props.row.id)"
           ><q-tooltip>Go to anonymization type selection for each column.</q-tooltip></q-btn>
         </q-td>
       </template>
@@ -123,7 +123,6 @@ export default defineComponent({
   methods: {
     checkSelectedDatabase() {
       console.log("teste")
-      console.log(this.databaseID)
       if (!this.databaseID) {
         Notify.create({
           type: "negative",
@@ -176,7 +175,6 @@ export default defineComponent({
         })
         .then((response) => {
           this.anonymizationProgress = response.data.progress
-          console.log("anonymization" + this.anonymizationProgress)
         }).catch(function (err) {
         Loading.hide()
       });;
@@ -192,11 +190,13 @@ export default defineComponent({
         })
         .then((response) => {
           this.encryptionProgress = response.data.progress
-          console.log("encryption" + this.encryptionProgress)
         }).catch(function (err) {
         Loading.hide()
       });;
     },
+    setAnonymization(tableID) {
+      this.$router.push({ name: "columnsTable", params: { databaseID: this.databaseID, tableID: tableID } })
+    }
   },
   data() {
     const selected = ref([]);
@@ -214,9 +214,6 @@ export default defineComponent({
     this.databaseID = this.$route.params.data;
     this.checkSelectedDatabase()
     
-  },
-  beforeDestroy() {
-    clearInterval(this.updateInterval);
-  },
+  }
 });
 </script>
