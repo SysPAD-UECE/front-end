@@ -33,39 +33,32 @@
       </template>
       <template name="props-action" v-slot:body-cell-action="props">
         <q-td :props="props">
-          <q-btn
+          <q-btn v-if="props.row.anonymization_progress > 0 || props.row.encryption_progress > 0  "
             :disabled="props.row.encrypted || props.row.anonymized"
             label="See Progress"
             @click="this.showProgress(props.row.id)"
             size="sm"
             color="primary"
           ></q-btn>
-          <q-btn
-            label="Send to Anonymization"
+          <q-btn v-else
+            label="Set Anonymization"
             size="sm"
             color="primary"
             @click="send(props.row.id)"
-          ></q-btn>
+          ><q-tooltip>Go to anonymization type selection for each column.</q-tooltip></q-btn>
         </q-td>
       </template>
     </q-table>
   </q-card>
-  <q-btn label="teste" @click="this.showProgress"></q-btn>
-  <q-dialog v-model="progressDialog">
+  <q-dialog v-model="progressDialog" persistent>
     <q-card class="q-ma-sm">
       <q-card-section  class="row items-center q-pb-sm" >
         <div class="text-h6">Data Protection Progress</div>
         <q-space/>
-        <q-btn icon="close" flat round dense v-close-popup/>
+        <q-btn icon="close" flat round dense v-close-popup @click="closeProgresDialog"/>
       </q-card-section>
-      <q-card-section  class="q-pa-md row items-start q-gutter-md">
-        <div class="column items-center q-mr-md">
-            <div  class="col">Anonymization Progress</div>
-          <div class="col">
-            <q-circular-progress :value="this.anonymizationProgress" size="50px" color="primary" class="q-ma-md" />
-          </div>
-          <div  class="col">{{ this.anonymizationProgress }} %</div>
-        </div >
+      <q-card-section  class="q-pa-md row items-start q-gutter-md" >
+        
         <div class="column items-center" >
           <div class="col">Encryption Progress</div>
           <div class="col">
@@ -73,6 +66,13 @@
           </div>
           <div  class="col">{{ this.encryptionProgress }} %</div>
         </div>
+        <div class="column items-center q-mr-md">
+            <div  class="col">Anonymization Progress</div>
+          <div class="col">
+            <q-circular-progress :value="this.anonymizationProgress" size="50px" color="primary" class="q-ma-md" />
+          </div>
+          <div  class="col">{{ this.anonymizationProgress }} %</div>
+        </div >
       </q-card-section>
     </q-card>
 
@@ -112,7 +112,8 @@ const tablesColumns = [
 import { defineComponent, ref } from "vue";
 import { api } from "src/boot/axios";
 import { mapGetters } from "vuex";
-import { Loading } from "quasar";
+import { Loading, Notify } from "quasar";
+
 
 export default defineComponent({
   name: "anonymitazation-table-picker",
@@ -120,12 +121,32 @@ export default defineComponent({
     ...mapGetters("auth", ["getToken"]),
   },
   methods: {
+    checkSelectedDatabase() {
+      console.log("teste")
+      console.log(this.databaseID)
+      if (!this.databaseID) {
+        Notify.create({
+          type: "negative",
+          message: "You need to select a database to procced",
+          timeout: 2000,
+        });
+        this.$router.push("/client/anonymization/databases");
+      } else {
+        this.getTableList();
+      }
+    },
     showProgress(table) {
+      this.selectedTable = table
       this.progressDialog = true
-      this.anonymizationProgressUpdate(table);
+      this.anonymizationProgressUpdate();
       this.updateIntervalAnonymization = setInterval(this.anonymizationProgressUpdate, 1000);
-      this.encryptionProgressUpdate(table);
-      this.updateIntervalEncryptation = setInterval(this.encryptionProgressUpdate, 1000);
+      this.encryptionProgressUpdate();
+      this.updateIntervalEncryption = setInterval(this.encryptionProgressUpdate, 1000);
+    },
+    closeProgresDialog(){
+      clearInterval(this.updateIntervalAnonymization);
+      clearInterval(this.updateIntervalEncryption);
+      this.selectedTable = ref(null)
     },
     getTableList() {
       if (!this.getToken) return;
@@ -140,35 +161,41 @@ export default defineComponent({
         .then((response) => {
           Loading.hide();
           this.tablesList = response.data.items;
-          console.log(response.data);
-        });
+        }).catch(function (err) {
+        Loading.hide()
+      });;
     },
-
-    anonymizationProgressUpdate(table) {
+    anonymizationProgressUpdate() {
+      if (!this.getToken) return;
       api
-        .get(`anonymization/database/${this.databaseID}/table/${table}/progress`, {
+        .get(`anonymization/database/${this.databaseID}/table/${this.selectedTable}/progress`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${this.getToken}`,
           },
         })
         .then((response) => {
-          // this.anonymizationProgress = response.data.progress
-          console.log(response.data);
-        });
+          this.anonymizationProgress = response.data.progress
+          console.log("anonymization" + this.anonymizationProgress)
+        }).catch(function (err) {
+        Loading.hide()
+      });;
     },
-    encryptionProgressUpdate(table) {
+    encryptionProgressUpdate() {
+      if (!this.getToken) return;
       api
-        .get(`encryption/database/${this.databaseID}/table/${table}/progress`, {
+        .get(`encryption/database/${this.databaseID}/table/${this.selectedTable}/progress`, {
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${this.getToken}`,
           },
         })
         .then((response) => {
-          // this.encryptionProgress = response.data.progress
-          console.log(response.data);
-        });
+          this.encryptionProgress = response.data.progress
+          console.log("encryption" + this.encryptionProgress)
+        }).catch(function (err) {
+        Loading.hide()
+      });;
     },
   },
   data() {
@@ -177,16 +204,16 @@ export default defineComponent({
       tablesColumns,
       selected,
       tablesList: [],
-      anonymizationProgress: 99,
-      encryptionProgress: 99,
+      anonymizationProgress: 0,
+      encryptionProgress: 0,
       progressDialog: ref(false),
+      selectedTable: null
     };
   },
   created() {
     this.databaseID = this.$route.params.data;
-    this.getTableList();
-    // this.anonymizationProgressUpdate();
-    // this.updateInterval = setInterval(this.anonymizationProgressUpdate, 1000)
+    this.checkSelectedDatabase()
+    
   },
   beforeDestroy() {
     clearInterval(this.updateInterval);
