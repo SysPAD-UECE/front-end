@@ -141,7 +141,7 @@ export default defineComponent({
       this.$router.push('/login')
     },
     setTimers: function () {
-      this.warningTimer = setTimeout(this.warningMessage, 50 * 1000);
+      this.warningTimer = setTimeout(this.warningMessage, 28800 * 1000);
       this.logoutTimer = setTimeout(this.logoutUser, 28880 * 1000);
 
       this.warningZone = false;
