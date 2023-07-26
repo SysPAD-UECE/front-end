@@ -2,7 +2,7 @@
   "name": "frida",
   "version": "0.0.1",
   "description": "Data Protection System based on Anonymization Techniques and aware of Privacy Laws.",
-  "productName": "Frida App",
+  "productName": "SysPAD",
   "author": "LARCES",
   "private": true,
   "scripts": {

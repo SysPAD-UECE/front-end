@@ -145,8 +145,8 @@ module.exports = configure(function (ctx) {
 
 
       manifest: {
-        name: `Frida App`,
-        short_name: `Frida App`,
+        name: `Data Protection System based on Encryptation and Anonymization Techniques`,
+        short_name: `SysPAD`,
         description: `A Quasar Project`,
         display: 'standalone',
         orientation: 'portrait',
