@@ -26,7 +26,6 @@
           </template>
           <template v-slot:body-cell-action="props">
             <q-td :props="props">
-              <q-btn color="green-7" icon="edit" size="sm" flat dense />
               <q-btn color="red" icon="delete" size="sm" class="q-ml-sm" flat dense @click="submitDelete(props.row.id)" />
             </q-td>
           </template>
