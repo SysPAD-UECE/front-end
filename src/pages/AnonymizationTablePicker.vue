@@ -34,7 +34,6 @@
       <template name="props-action" v-slot:body-cell-action="props">
         <q-td :props="props">
           <q-btn v-if="props.row.anonymization_progress > 0 || props.row.encryption_progress > 0  "
-            :disabled="props.row.encrypted || props.row.anonymized"
             label="See Progress"
             @click="this.showProgress(props.row.id)"
             size="sm"
