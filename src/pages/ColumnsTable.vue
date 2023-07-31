@@ -3,7 +3,7 @@
         <q-card-section>
         <div class="text-h6 text-grey-8">
           Columns
-          <q-btn label="Protect Data" class="float-right text-capitalize shadow-3" color="primary" icon="key" @click="this.recordAllColumns()" :disable="!isAnonymizationSelected"/>
+          <q-btn label="Protect Data" class="float-right text-capitalize shadow-3" color="primary" icon="key" @click="this.addAnonymizationColumns()" :disable="!isAnonymizationSelected"/>
         </div>
         <div>
             <text-subtitle>Select a Anonymization type for each column and click on Protect Data button.</text-subtitle>
@@ -19,6 +19,7 @@
       <template v-slot:body-cell-anonType="props">
           <q-select
             v-model="props.row.anonymization"
+            clearable
             :options="anonymizationTypeList"
             :dense="true"
             :options-dense="true"
@@ -26,14 +27,16 @@
         </template>
       </q-table>
     </q-card-section>
-      
+
     </q-card>
     <q-card><h5>anaonymization records </h5>
         <q-btn label="anonymization record"  @click="this.getAnonymizationRecord()" ></q-btn>
 {{ this.anonymizationRecord }}
+<q-btn label=" delete sanonymization record"  @click="this.deleteAnonymizationRecord()" ></q-btn>
+
 </q-card>
   </template>
-  
+
   <script>
   const columnsColumns = [
     {
@@ -56,19 +59,19 @@
   import { api } from "src/boot/axios";
   import { mapGetters } from "vuex";
   import { Loading, Notify } from "quasar";
-  
-  
+
+
   export default defineComponent({
     name: "anonymitazation-table-picker",
     computed: {
       ...mapGetters("auth", ["getToken"]),
-      //checking if there's some anonymization type selected to protect data 
+      //if some anonymization technique is selected, the button is activated
       isAnonymizationSelected() {
       return this.columnsList.some(item => item.anonymization !== null);
     },
     },
     methods: {
-        
+
       checkSelectedDatabase() {
         console.log("teste")
         console.log(this.databaseID)
@@ -115,16 +118,93 @@
           },
         })
         .then((response) => {
-            const resp = response.data.items
-            this.anonymizationTypeList = resp.map((resp) => resp.name)
-            console.log(this.anonymizationTypeList)
+          this.anonymizationItems = response.data.items
+          this.anonymizationTypeList = this.anonymizationItems.map((anonItem) => anonItem.name)
+          console.log(this.anonymizationItems)
         })
     },
-    //get anonymization records to developmen version
+    //This method is for adding arrays of columns to each anonymization id in a table called Anonymization Records.
+    addAnonymizationColumns(){
+      //This loop is for sending one columns array for each anonymization type by id.
+      for (var id = 1; id < 8; id++) {
+          //Find anonymization by id.
+          const anonymization = this.anonymizationItems.find(
+            (anonymization) => anonymization.id === id
+          );
+          console.log("ANONYMIZATION" + anonymization)
+          //Get all columns and put on a array to send to Anonymization Records table.
+          console.log("AQQQ" + this.columnsList.name)
+          var columnsToRecord = this.columnsList
+            .filter((column) => column.anonymization === anonymization.name)
+            .map((column) => column.name);
+          this.postAnonymizationData(columnsToRecord, id);
+        }
+        this.encryptAndAnonymizeData()
+    },
+    postAnonymizationData(columns, id){
+      if (!this.getToken) return
+      console.log("Colunas para anonimizar: "+ columns + "\ Id da anonymizacao: num " + id)
+
+      const data = {
+        database_id: parseInt(this.databaseID),
+        anonymization_type_id: id,
+        table_id: parseInt(this.tableID),
+        columns: columns
+      };
+      console.log("data: "+data)
+      api
+          .post("/anonymization_record", data, {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${this.getToken}`,
+            },
+          }).then((response) => {
+            console.log(response.data);
+          })
+
+    },
+    async encryptAndAnonymizeData() {
+  try {
+    const encryptionResponse = await this.postEncryptData();
+    console.log(encryptionResponse); // You can do something with the encryption response if needed
+
+    const anonymizationResponse = await this.postAnonymizeData();
+    console.log(anonymizationResponse); // You can do something with the anonymization response if needed
+
+    // All actions that need to be performed after both encryption and anonymization can go here
+    // For example, this.$router.push('/client/anonymization/databases');
+  } catch (error) {
+    console.error("An error occurred during encryption or anonymization:", error);
+    // Handle the error if needed
+  }
+},
+
+postEncryptData() {
+  if (!this.getToken) return Promise.reject("No token available");
+
+  return api.post(`encryption/database/${this.databaseID}/table/${this.tableID}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${this.getToken}`,
+    },
+  });
+},
+
+postAnonymizeData() {
+  if (!this.getToken) return Promise.reject("No token available");
+
+  return api.post(`anonymization/database/${this.databaseID}/table/${this.tableID}`, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${this.getToken}`,
+    },
+  });
+},
+    //This method is for checking if the columns were successfully added to Anonymization Record.
+    // If so, I can see if I need to delete the data to test the functionality again.
         getAnonymizationRecord() {
             if (!this.getToken) return;
-      api
-      if (!this.getToken) return;
+
       api
         .get("./anonymization_record", {
           headers: {
@@ -136,9 +216,25 @@
             this.anonymizationRecord = response.data.items
         })
         },
-        updateAnonymizationTechnique() {
-            console.log(this.columnsList)
-      },
+        deleteAnonymizationRecord() {
+          for (var i = 75; i < 83; i++){
+            this.deleteAnonRecord(i)
+          }
+        },
+        deleteAnonRecord(id) {
+            if (!this.getToken) return;
+
+      api
+        .delete(`./anonymization_record/${id}`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${this.getToken}`,
+          },
+        })
+        .then((response) => {
+            this.anonymizationRecord = response.data.items
+        })
+        },
     },
     data() {
       return {
@@ -147,6 +243,7 @@
         progressDialog: ref(false),
         selectedTable: null,
         anonymizationTypeList: [],
+        anonymizationItems: [],
         anonymizationRecord: null
 
       };
@@ -156,8 +253,7 @@
       this.tableID = this.$route.params.tableID
       this.checkSelectedDatabase()
 
-      
+
     }
   });
   </script>
-  
